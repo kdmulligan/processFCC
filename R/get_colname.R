@@ -1,4 +1,4 @@
-#' @title get_colname
+#' @title Get Standardized Column Names for FCC Data
 #'
 #' @description  Creates vector of proper column names depending on year and
 #'  month of dataset

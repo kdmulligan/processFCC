@@ -1,4 +1,4 @@
-#' @title csv_to_sql_db
+#' @title FCC file to SQLite Database via chunking
 #'
 #' @description Reads FCC csv file in chunks while writing each chunk to a SQL
 #' database before reading in the next chunk. DBI connection and FCC column
