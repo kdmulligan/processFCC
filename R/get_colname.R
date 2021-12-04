@@ -16,6 +16,10 @@
 
 
 get_colname <- function(year, month){
+  if(!is.numeric(year)) stop("Year input should be a numeric")
+  if(!is.character(month)) stop("Month should be a character")
+  if(year < 2015 | year > 2020) stop("Column names only provided for FCC data years 2015 through 2020")
+  if(!(month == "June" | month == "Dec")){stop("Please use month equal to 'June' or 'Dec'")}
   colnam_old <- c("LRN", "prov_id", "FRN", "prov_name", "DBA", "hoco_name",
                   "hoco_num", "hoco_final", "StateAbbr", "cb_fips", "tech_code",
                   "consumer", "max_down", "max_up", "business",
@@ -38,3 +42,4 @@ get_colname <- function(year, month){
     return(colnam_new)
   }
 }
+
