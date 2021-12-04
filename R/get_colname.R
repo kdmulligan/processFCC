@@ -42,4 +42,3 @@ get_colname <- function(year, month){
     return(colnam_new)
   }
 }
-
