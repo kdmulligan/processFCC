@@ -16,3 +16,4 @@ append_to_sql_db(con)
 Callback function for \code{csv_to_sql_db} that appends new sections to the
 SQLite table.
 }
+\keyword{internal}
