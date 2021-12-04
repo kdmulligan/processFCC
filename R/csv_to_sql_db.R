@@ -65,6 +65,7 @@ csv_to_sql_db <- function(csv_file, con, pre_process_size = 1000,
 #' Callback function for \code{csv_to_sql_db} that appends new sections to the
 #' SQLite table.
 #' @param con A connection to SQLite database.
+#' @keywords internal
 
 append_to_sql_db <- function(con) {
   #' @param x Data.frame reading from.
