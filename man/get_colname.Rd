@@ -2,7 +2,7 @@
 % Please edit documentation in R/get_colname.R
 \name{get_colname}
 \alias{get_colname}
-\title{get_colname}
+\title{Get Standardized Column Names for FCC Data}
 \usage{
 get_colname(year, month)
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/csv_to_sql_db.R
 \name{csv_to_sql_db}
 \alias{csv_to_sql_db}
-\title{csv_to_sql_db}
+\title{FCC file to SQLite Database via chunking}
 \usage{
 csv_to_sql_db(
   csv_file,
