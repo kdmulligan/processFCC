@@ -1,12 +1,15 @@
 Package: processFCC
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Process Fixed Broadband Data from FCC Form 477
 Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
+Author: Kailey Mulligan
+Maintainer: Kailey Mulligan <kailey-mulligan@uiowa.edu>
 Description: More about what it does (maybe more than one line)
     Use four spaces when indenting paragraphs within the Description.
 License: What license is it under?
 Encoding: UTF-8
+URL: https://github.com/kdmulligan/processFCC
 LazyData: true
 RoxygenNote: 7.1.2
+VignetteBuilder: 
+    knitr
