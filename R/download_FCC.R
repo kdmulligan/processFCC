@@ -1,3 +1,24 @@
+#' @title Download FCC Fixed Broadband Datasets
+#'
+#' @description  Downloads FCC fixed broadband dataset for the specified year
+#' and month. Years prior to 2020 are available in a zipped format so the
+#' zipped file is downloaded to the working directory, opened, and then the
+#' inside csv is saved to the working directory with a common naming convention
+#' to use later on. The 2020 data sets are only available as a CSV and take
+#' much longer to download (apx. 30+ minutes). Alternatively you can download
+#' the datasets from the FCC website and use the \code{get_colname} function to
+#' get the proper column names for your data downloaded outside of R.
+#'
+#' @param year The year of the FCC dataset
+#' @param month The month of the FCC dataset
+#'
+#' @return csv (to the working directory) of the desired FCC fixed broadband
+#' dataset
+#'
+#' @examples
+#' download_FCC(year = 2019, month = "June")
+#' @export
+
 download_FCC <- function(year, month){
   if(!is.numeric(year)) stop("Year input should be a numeric")
   if(!is.character(month)) stop("Month should be a character")
@@ -28,19 +49,17 @@ download_FCC <- function(year, month){
     url_d <- "https://opendata.fcc.gov/api/views/hicn-aujz/rows.csv?accessType=DOWNLOAD&sorting=true"
   }
   to_use <- ifelse(month == "June", url_j, url_d)
-  # month = "Dec"
-  # year = "2020"
-  name_zip <- paste0("FCC_fixed_brdbd_", month, "_", year, ".zip")
+  # name for resulting, unzipped csv
   name_csv <- paste0("FCC_fixed_brdbd_", month, "_", year, ".csv")
-  # download file to working directory
-  utils::download.file(url = to_use, destfile = name_zip)
   if(year != 2020){
+    name_zip <- paste0("FCC_fixed_brdbd_", month, "_", year, ".zip")
     utils::download.file(url = to_use, destfile = name_zip)
     files <- unzip(name, list = TRUE)[[1]]
     wd <- getwd()
     unzip(name, files = files, exdir = wd, unzip = "unzip")
     file.rename(from = files, to = name_csv)
   } else{
+    # if file is from 2020 then does not need to be unzipped
     utils::download.file(url = to_use, destfile = name_csv)
   }
 
