@@ -102,7 +102,8 @@ bigger geographic level, such as Census Block group or County. The
 
 Each group is nested within the previous (e.g., Counties are nested
 within States, meaning FIPS county codes are unique within states, and
-so on for smaller census geography units).
+so on for smaller census geography units). State is the largest and
+Census Block is the smallest.
 
 ### Technology Codes
 
