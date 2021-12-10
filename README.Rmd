@@ -106,7 +106,7 @@ knitr::include_graphics('./map of iowa no sat.png')
 
 # How to use this package
 
-To see how to use this package and what to keep in mind, please see the [proccessFCC vignette](./vignettes/vig-processFCC.Rmd)
+To see how to use this package and what to keep in mind, please see the [proccessFCC vignette](./vignettes/processing_FCC.Rmd)
 
 
 

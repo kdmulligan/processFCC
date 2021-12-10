@@ -189,4 +189,4 @@ indicates no access to internet at 25/3.
 # How to use this package
 
 To see how to use this package and what to keep in mind, please see the
-[proccessFCC vignette](./vignettes/vig-processFCC.Rmd)
+[proccessFCC vignette](./vignettes/processing_FCC.Rmd)
