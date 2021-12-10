@@ -41,7 +41,7 @@
 #' \dontrun{
 #' }
 #' @export
-#' @importFrom dbplyr mutate
+#' @importFrom dbplyr
 #' @importFrom dplyr mutate %>% select distinct filter group_by summarise left_join rename_at vars
 #' @importFrom tidyr replace_na starts_with
 #' @importFrom data.table as.data.table fwrite
