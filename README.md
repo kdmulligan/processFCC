@@ -1,6 +1,4 @@
 
-<!-- README.md is generated from README.Rmd. Please edit that file -->
-
 # Package to Process FCC Fixed Broadband Datasets
 
 ## Installation
@@ -9,20 +7,8 @@ You can install the development version of processFCC like so:
 
 ``` r
 install.packages("devtools")
-#> package 'devtools' successfully unpacked and MD5 sums checked
-#> 
-#> The downloaded binary packages are in
-#>  C:\Users\kaile\AppData\Local\Temp\RtmpkZOnVX\downloaded_packages
 library(devtools)
 install_github("kdmulligan/processFCC")
-#>          checking for file 'C:\Users\kaile\AppData\Local\Temp\RtmpkZOnVX\remotes48ac7fb324a2\kdmulligan-processFCC-a1b5710/DESCRIPTION' ...  v  checking for file 'C:\Users\kaile\AppData\Local\Temp\RtmpkZOnVX\remotes48ac7fb324a2\kdmulligan-processFCC-a1b5710/DESCRIPTION'
-#>       -  preparing 'processFCC':
-#>    checking DESCRIPTION meta-information ...     checking DESCRIPTION meta-information ...   v  checking DESCRIPTION meta-information
-#>       -  checking for LF line-endings in source and make files and shell scripts
-#>   -  checking for empty or unneeded directories
-#>       -  building 'processFCC_0.1.0.tar.gz'
-#>      
-#> 
 library(processFCC)
 ```
 
