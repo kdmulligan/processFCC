@@ -44,9 +44,9 @@ Because the forms are submitted biannually, data is provided for June
 and December of each year beginning December 2014, and available through
 December 2020. Prior to December 2019 the datasets have additional
 columns indicating different upload and download speeds for consumer
-versus business customers, thus it is important to use the  function in
-the package to get the proper column names for the datasets you are
-downloading and working with.
+versus business customers, thus it is important to use the `get_colname`
+function in the package to get the proper column names for the datasets
+you are downloading and working with.
 
 ``` r
 get_colname(year = 2017, month = "June")
@@ -61,8 +61,8 @@ get_colname(year = 2020, month = "June")
 #> [11] "tech_code"  "consumer"   "max_down"   "max_up"     "business"
 ```
 
-These datasets are key to knowing where fixed broadband internet is
-provided however due to their size (\> 8 GB) and complexity many
+These data sets are key to knowing where fixed broadband internet is
+provided however due to their size (> 8 GB) and complexity many
 researchers avoid using them. The data cannot be used in its raw form
 available from the FCC website because there are multiple rows per
 Census Block per unique broadband provider, technology, and speed. This
@@ -91,15 +91,13 @@ FIPS code. This 15-digits FIPS code allows us to group the data to a
 bigger geographic level, such as Census Block group or County. The
 15-digit FIPS code works as follows:
 
-``` 
-* AABBBCCCCCCDEEE
-    + A: state
-    + B: county
-    + C: Census Tract
-    + D: Census Block Group
-    + E: Census Block
-    
-```
+    - AABBBCCCCCCDEEE
+        - A: state
+        - B: county
+        - C: Census Tract
+        - D: Census Block Group
+        - E: Census Block
+        
 
 Each group is nested within the previous (e.g., Counties are nested
 within States, meaning FIPS county codes are unique within states, and
@@ -110,20 +108,20 @@ so on for smaller census geography units).
 Within the FCC Fixed Broadband Deployment Data there are 14 technology
 codes:
 
-    * 10: Asymmetric xDSL
-    * 11: ADSL2, ADSL2+
-    * 12: VDSL
-    * 20: Symmetric xDSL
-    * 30: All other copper-wire tech
-    * 40: Cable Modem other
-    * 41: Cable Modem – DOCSIS 1, 1.1 or 2.0
-    * 42: Cable Modem – DOCSIS 3.0
-    * 43: Cable Modem – DOCSIS 3.1 
-    * 50: Fiber to the end user
-    * 60: Satellite
-    * 70: Terrestrial Fixed Wireless
-    * 90: Electric Power Line
-    * 0: All Other
+    - 10: Asymmetric xDSL
+    - 11: ADSL2, ADSL2+
+    - 12: VDSL
+    - 20: Symmetric xDSL
+    - 30: All other copper-wire tech
+    - 40: Cable Modem other
+    - 41: Cable Modem – DOCSIS 1, 1.1 or 2.0
+    - 42: Cable Modem – DOCSIS 3.0
+    - 43: Cable Modem – DOCSIS 3.1 
+    - 50: Fiber to the end user
+    - 60: Satellite
+    - 70: Terrestrial Fixed Wireless
+    - 90: Electric Power Line
+    - 0: All Other
 
 Not all technologies are equally effective or reliable. The types of
 technology are not discussed here, but for more information visit
