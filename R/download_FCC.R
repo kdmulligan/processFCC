@@ -18,6 +18,8 @@
 #' @examples
 #' download_FCC(year = 2019, month = "June")
 #' @export
+#' @importFrom utils download.file unzip
+#' @importFrom RSQLite dbWriteTable
 
 download_FCC <- function(year, month){
   if(!is.numeric(year)) stop("Year input should be a numeric")
@@ -54,13 +56,12 @@ download_FCC <- function(year, month){
   if(year != 2020){
     name_zip <- paste0("FCC_fixed_brdbd_", month, "_", year, ".zip")
     utils::download.file(url = to_use, destfile = name_zip)
-    files <- unzip(name, list = TRUE)[[1]]
+    files <- utils::unzip(name, list = TRUE)[[1]]
     wd <- getwd()
-    unzip(name, files = files, exdir = wd, unzip = "unzip")
+    utils::unzip(name, files = files, exdir = wd, unzip = "unzip")
     file.rename(from = files, to = name_csv)
   } else{
     # if file is from 2020 then does not need to be unzipped
     utils::download.file(url = to_use, destfile = name_csv)
   }
-
 }
