@@ -13,6 +13,17 @@ knitr::opts_chunk$set(
 )
 ```
 
+## Installation
+
+You can install the development version of processFCC like so:
+```{r}
+install.packages("devtools")
+library(devtools)
+install_github("kdmulligan/processFCC")
+library(processFCC)
+```
+
+
 # processFCC
 
 <!-- badges: start -->
@@ -72,16 +83,7 @@ Currently adequate broadband service is considered a download speed of 25 Mbps a
 
 With the various speeds in mind, the processing function of this package was written to allow for flexibility of user inputted speed thresholds. 5 different thresholds can be considered in the process function which counts the number of providers providing internet at or above the threshold within the specified census geography region. One must input a vector of download speeds and a vector of upload speeds of equal length. The elements of the vectors are matched for the thresholds. 
 
-## Installation
 
-You can install the development version of processFCC like so:
-
-``` r
-install.packages("devtools")
-library(devtools)
-install_github("kdmulligan/processFCC")
-library(processFCC)
-```
 
 ## Example
 
