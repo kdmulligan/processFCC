@@ -7,23 +7,13 @@ You can install the development version of processFCC like so:
 
 ``` r
 install.packages("devtools")
-#> Installing package into 'C:/Users/kaile/AppData/Local/Temp/RtmpYHnr30/temp_libpatha9cc60237bd5'
-#> (as 'lib' is unspecified)
 #> package 'devtools' successfully unpacked and MD5 sums checked
 #> 
 #> The downloaded binary packages are in
-#>  C:\Users\kaile\AppData\Local\Temp\Rtmpmuo5XT\downloaded_packages
+#>  C:\Users\kaile\AppData\Local\Temp\Rtmpi0UuFW\downloaded_packages
 library(devtools)
-#> Loading required package: usethis
 install_github("kdmulligan/processFCC")
-#> WARNING: Rtools 3.5 found on the path at C:/Rtools is not compatible with R 4.0.5.
-#> 
-#> Please download and install Rtools 4.0 from https://cran.r-project.org/bin/windows/Rtools/, remove the incompatible version from your PATH.
-#> Downloading GitHub repo kdmulligan/processFCC@HEAD
-#> WARNING: Rtools 3.5 found on the path at C:/Rtools is not compatible with R 4.0.5.
-#> 
-#> Please download and install Rtools 4.0 from https://cran.r-project.org/bin/windows/Rtools/, remove the incompatible version from your PATH.
-#>       v  checking for file 'C:\Users\kaile\AppData\Local\Temp\Rtmpmuo5XT\remotes390462f84da6\kdmulligan-processFCC-8d484c6/DESCRIPTION' (439ms)
+#>          checking for file 'C:\Users\kaile\AppData\Local\Temp\Rtmpi0UuFW\remotesa2282c927bfe\kdmulligan-processFCC-fa02db4/DESCRIPTION' ...  v  checking for file 'C:\Users\kaile\AppData\Local\Temp\Rtmpi0UuFW\remotesa2282c927bfe\kdmulligan-processFCC-fa02db4/DESCRIPTION'
 #>       -  preparing 'processFCC':
 #>    checking DESCRIPTION meta-information ...     checking DESCRIPTION meta-information ...   v  checking DESCRIPTION meta-information
 #>       -  checking for LF line-endings in source and make files and shell scripts
@@ -31,8 +21,6 @@ install_github("kdmulligan/processFCC")
 #>       -  building 'processFCC_0.1.0.tar.gz'
 #>      
 #> 
-#> Installing package into 'C:/Users/kaile/AppData/Local/Temp/RtmpYHnr30/temp_libpatha9cc60237bd5'
-#> (as 'lib' is unspecified)
 library(processFCC)
 ```
 
