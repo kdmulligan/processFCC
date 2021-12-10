@@ -1,6 +1,8 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
+# Package to Process FCC Fixed Broadband Datasets
+
 ## Installation
 
 You can install the development version of processFCC like so:
@@ -10,10 +12,10 @@ install.packages("devtools")
 #> package 'devtools' successfully unpacked and MD5 sums checked
 #> 
 #> The downloaded binary packages are in
-#>  C:\Users\kaile\AppData\Local\Temp\Rtmpi0UuFW\downloaded_packages
+#>  C:\Users\kaile\AppData\Local\Temp\Rtmp0camR8\downloaded_packages
 library(devtools)
 install_github("kdmulligan/processFCC")
-#>          checking for file 'C:\Users\kaile\AppData\Local\Temp\Rtmpi0UuFW\remotesa2282c927bfe\kdmulligan-processFCC-fa02db4/DESCRIPTION' ...  v  checking for file 'C:\Users\kaile\AppData\Local\Temp\Rtmpi0UuFW\remotesa2282c927bfe\kdmulligan-processFCC-fa02db4/DESCRIPTION'
+#>          checking for file 'C:\Users\kaile\AppData\Local\Temp\Rtmp0camR8\remotes87004a4f54\kdmulligan-processFCC-adf6a3c/DESCRIPTION' ...  v  checking for file 'C:\Users\kaile\AppData\Local\Temp\Rtmp0camR8\remotes87004a4f54\kdmulligan-processFCC-adf6a3c/DESCRIPTION'
 #>       -  preparing 'processFCC':
 #>    checking DESCRIPTION meta-information ...     checking DESCRIPTION meta-information ...   v  checking DESCRIPTION meta-information
 #>       -  checking for LF line-endings in source and make files and shell scripts
@@ -24,11 +26,7 @@ install_github("kdmulligan/processFCC")
 library(processFCC)
 ```
 
-# processFCC
-
-<!-- badges: start -->
-
-<!-- badges: end -->
+## Background of FCC Fixed Broadband Datasets
 
 The goal of processFCC is to process the fixed broadband data sets from
 the [Federal Communications Commision
@@ -100,26 +98,46 @@ above the given download and upload speed thresholds, up to 5 speed
 thresholds combinations can be specified. It is also possible to exclude
 different broadband technologies or filter down to specific states.
 
-## Census Geography
+### Census Geography
 
 The FCC data are reported at the Census Block level using the 15-digit
 FIPS code. This 15-digits FIPS code allows us to group the data to a
 bigger geographic level, such as Census Block group or County. The
-15-digit FIPS code works as follows: \* AABBBCCCCCCDEEE + A: state + B:
-county + C: Census Tract + D: Census Block Group + E: Census Block Each
-group is nested within the previous (e.g., Counties are nested within
-States, meaning FIPS county codes are unique within states, and so on
-for smaller census geography units).
+15-digit FIPS code works as follows:
 
-## Technology Codes
+``` 
+* AABBBCCCCCCDEEE
+    + A: state
+    + B: county
+    + C: Census Tract
+    + D: Census Block Group
+    + E: Census Block
+    
+```
+
+Each group is nested within the previous (e.g., Counties are nested
+within States, meaning FIPS county codes are unique within states, and
+so on for smaller census geography units).
+
+### Technology Codes
 
 Within the FCC Fixed Broadband Deployment Data there are 14 technology
-codes: \* 10: Asymmetric xDSL \* 11: ADSL2, ADSL2+ \* 12: VDSL \* 20:
-Symmetric xDSL \* 30: All other copper-wire tech \* 40: Cable Modem
-other \* 41: Cable Modem – DOCSIS 1, 1.1 or 2.0 \* 42: Cable Modem –
-DOCSIS 3.0 \* 43: Cable Modem – DOCSIS 3.1 \* 50: Fiber to the end user
-\* 60: Satellite \* 70: Terrestrial Fixed Wireless \* 90: Electric Power
-Line \* 0: All Other
+codes:
+
+    * 10: Asymmetric xDSL
+    * 11: ADSL2, ADSL2+
+    * 12: VDSL
+    * 20: Symmetric xDSL
+    * 30: All other copper-wire tech
+    * 40: Cable Modem other
+    * 41: Cable Modem – DOCSIS 1, 1.1 or 2.0
+    * 42: Cable Modem – DOCSIS 3.0
+    * 43: Cable Modem – DOCSIS 3.1 
+    * 50: Fiber to the end user
+    * 60: Satellite
+    * 70: Terrestrial Fixed Wireless
+    * 90: Electric Power Line
+    * 0: All Other
 
 Not all technologies are equally effective or reliable. The types of
 technology are not discussed here, but for more information visit
@@ -145,7 +163,7 @@ Another reason for the flexibility allowed with technology codes is that
 one may wish to focus only on one type of technology, excluding all
 others, to see where it is available through the country or a state.
 
-## Broadband Speeds
+### Broadband Speeds
 
 Currently adequate broadband service is considered a download speed of
 25 Mbps and upload speed of 3 Mbps. (The FCC definition prior to 2015
@@ -170,38 +188,40 @@ threshold within the specified census geography region. One must input a
 vector of download speeds and a vector of upload speeds of equal length.
 The elements of the vectors are matched for the thresholds.
 
-## Example
+Once the FCC fixed broadband data is on a level where there is one row
+per census geography region it is much easier to work with and opens a
+world of possibilities, such as calculating the proportion of people
+within a larger census geography with access to a certain speed or
+making maps of the number of providers per region. For example, here is
+a map of the state of Iowa at the Census Block level created using the
+FCC data. Satellite technology was excluded in rolling up the data to a
+25/3 threshold. The provider count at 25/3 Mbps was then converted to a
+binary variable where 1 indicates access to broadband at 25/3 and 0
+indicates no access to internet at 25/3.
+
+![iowa broadband map](./map%20of%20iowa%20no%20sat.png)
+
+# How to use this package
 
 This is a basic example which shows you how to solve a common problem:
 
 ``` r
 library(processFCC)
 ## basic example code
+
+
+month = "Dec"
+year = 2018
+system.time(download_FCC(year, month)) #time: 
+use_colnam <- get_colname(year, month)
+con <- dbConnect(SQLite(), dbname = "fcc.sqlite")
+name_csv <- paste0("FCC_fixed_brdbd_", month, "_", year, ".csv")
+system.time(csv_to_sql_db(name_csv, con, 
+                                  db_colnam = use_colnam))
+# dbDisconnect(con)
+process_fcc(con, year = 2018, month = "June", geogr = "ct",
+            tech_exc = c("0", "60", "70"), thresh_down = c(25, 100),
+            thresh_up = c(5, 10))
+
+dbDisconnect(con)
 ```
-
-What is special about using `README.Rmd` instead of just `README.md`?
-You can include R chunks like so:
-
-``` r
-summary(cars)
-#>      speed           dist       
-#>  Min.   : 4.0   Min.   :  2.00  
-#>  1st Qu.:12.0   1st Qu.: 26.00  
-#>  Median :15.0   Median : 36.00  
-#>  Mean   :15.4   Mean   : 42.98  
-#>  3rd Qu.:19.0   3rd Qu.: 56.00  
-#>  Max.   :25.0   Max.   :120.00
-```
-
-You’ll still need to render `README.Rmd` regularly, to keep `README.md`
-up-to-date. `devtools::build_readme()` is handy for this. You could also
-use GitHub Actions to re-render `README.Rmd` every time you push. An
-example workflow can be found here:
-<https://github.com/r-lib/actions/tree/v1/examples>.
-
-You can also embed plots, for example:
-
-<img src="man/figures/README-pressure-1.png" width="100%" />
-
-In that case, don’t forget to commit and push the resulting figure
-files, so they display on GitHub and CRAN.
