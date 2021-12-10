@@ -98,7 +98,7 @@ here is a map of the state of Iowa at the Census Block level created using the F
 
 This is a basic example which shows you how to solve a common problem:
 
-```{r example}
+```{r example, eval = FALSE}
 library(processFCC)
 ## basic example code
 
