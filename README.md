@@ -12,10 +12,10 @@ install.packages("devtools")
 #> package 'devtools' successfully unpacked and MD5 sums checked
 #> 
 #> The downloaded binary packages are in
-#>  C:\Users\kaile\AppData\Local\Temp\RtmpGKOLGl\downloaded_packages
+#>  C:\Users\kaile\AppData\Local\Temp\RtmpKCMaQk\downloaded_packages
 library(devtools)
 install_github("kdmulligan/processFCC")
-#>          checking for file 'C:\Users\kaile\AppData\Local\Temp\RtmpGKOLGl\remotes67b05f5b3e9d\kdmulligan-processFCC-2988435/DESCRIPTION' ...  v  checking for file 'C:\Users\kaile\AppData\Local\Temp\RtmpGKOLGl\remotes67b05f5b3e9d\kdmulligan-processFCC-2988435/DESCRIPTION'
+#>          checking for file 'C:\Users\kaile\AppData\Local\Temp\RtmpKCMaQk\remotes12e467e15fb1\kdmulligan-processFCC-b7a0378/DESCRIPTION' ...  v  checking for file 'C:\Users\kaile\AppData\Local\Temp\RtmpKCMaQk\remotes12e467e15fb1\kdmulligan-processFCC-b7a0378/DESCRIPTION'
 #>       -  preparing 'processFCC':
 #>    checking DESCRIPTION meta-information ...     checking DESCRIPTION meta-information ...   v  checking DESCRIPTION meta-information
 #>       -  checking for LF line-endings in source and make files and shell scripts
@@ -199,7 +199,7 @@ FCC data. Satellite technology was excluded in rolling up the data to a
 binary variable where 1 indicates access to broadband at 25/3 and 0
 indicates no access to internet at 25/3.
 
-<img src="./map of iowa no sat.png" width="50%" />
+<img src="./map of iowa no sat.png" width="50%" style="display: block; margin: auto;" />
 
 <!-- ![iowa broadband map](./map of iowa no sat.png){:height="36px" width="36px"} -->
 
