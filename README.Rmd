@@ -43,38 +43,38 @@ get_colname(year = 2020, month = "June")
 ```
 
 
-These datasets are key to knowing where fixed broadband internet is provided however due to their size (> 8 GB) and complexity many researchers avoid using them. The data cannot be used in its raw form available from the FCC website because there are multiple rows per Census Block per unique broadband provider, technology, and speed. This means there are numerous options for measurement of broadband access which could be chosen to fit your research question. Some examples include average upload or download speeds, number of providers, technology offered, or penetration rate. The raw data has many nuances which can be confusing, so it is vital to understand its format before rolling it up to fit a research question. Additionally, FCC data are at the Census Block level, the smallest unit of Census Geography, which gives greater flexibility. It can be rolled up to any higher Census Geography such as Census Block Group, Census Tract, or County.
+These data sets are key to knowing where fixed broadband internet is provided however due to their size (> 8 GB) and complexity many researchers avoid using them. The data cannot be used in its raw form available from the FCC website because there are multiple rows per Census Block per unique broadband provider, technology, and speed. This means there are numerous options for measurement of broadband access which could be chosen to fit your research question. Some examples include average upload or download speeds, number of providers, technology offered, or penetration rate. The raw data has many nuances which can be confusing, so it is vital to understand its format before rolling it up to fit a research question. Additionally, FCC data are at the Census Block level, the smallest unit of Census Geography, which gives greater flexibility. It can be rolled up to any higher Census Geography such as Census Block Group, Census Tract, or County.
 This package has function to download the desired year/month of the data, get the proper column names, put the dataset into a SQLite database, and process the data to a smaller level. The processed form of the data is one row per specificed census geography, such as census block, and counts the number of internet service providers providing internet at or above the given download and upload speed thresholds, up to 5 speed thresholds combinations can be specified. It is also possible to exclude different broadband technologies or filter down to specific states.
 
 ### Census Geography
 The FCC data are reported at the Census Block level using the 15-digit FIPS code. This 15-digits FIPS code allows us to group the data to a bigger geographic level, such as Census Block group or County. The 15-digit FIPS code works as follows:
 
-    * AABBBCCCCCCDEEE
-        + A: state
-        + B: county
-        + C: Census Tract
-        + D: Census Block Group
-        + E: Census Block
+    - AABBBCCCCCCDEEE
+        - A: state
+        - B: county
+        - C: Census Tract
+        - D: Census Block Group
+        - E: Census Block
         
 Each group is nested within the previous (e.g., Counties are nested within States, meaning FIPS county codes are unique within states, and so on for smaller census geography units).
 
 ### Technology Codes
 Within the FCC Fixed Broadband Deployment Data there are 14 technology codes:
 
-    * 10: Asymmetric xDSL
-    * 11: ADSL2, ADSL2+
-    * 12: VDSL
-    * 20: Symmetric xDSL
-    * 30: All other copper-wire tech
-    * 40: Cable Modem other
-    * 41: Cable Modem – DOCSIS 1, 1.1 or 2.0
-    * 42: Cable Modem – DOCSIS 3.0
-    * 43: Cable Modem – DOCSIS 3.1 
-    * 50: Fiber to the end user
-    * 60: Satellite
-    * 70: Terrestrial Fixed Wireless
-    * 90: Electric Power Line
-    * 0: All Other
+    - 10: Asymmetric xDSL
+    - 11: ADSL2, ADSL2+
+    - 12: VDSL
+    - 20: Symmetric xDSL
+    - 30: All other copper-wire tech
+    - 40: Cable Modem other
+    - 41: Cable Modem – DOCSIS 1, 1.1 or 2.0
+    - 42: Cable Modem – DOCSIS 3.0
+    - 43: Cable Modem – DOCSIS 3.1 
+    - 50: Fiber to the end user
+    - 60: Satellite
+    - 70: Terrestrial Fixed Wireless
+    - 90: Electric Power Line
+    - 0: All Other
     
 
 Not all technologies are equally effective or reliable. The types of technology are not discussed here, but for more information visit [BroadbandNow](https://broadbandnow.com/research).
