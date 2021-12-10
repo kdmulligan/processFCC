@@ -17,3 +17,24 @@ knitr::opts_chunk$set(
 ```{r setup}
 library(processFCC)
 ```
+
+
+```{r example, eval = FALSE}
+library(processFCC)
+## basic example code
+
+
+month = "Dec"
+year = 2018
+system.time(download_FCC(year, month)) #time: 
+use_colnam <- get_colname(year, month)
+con <- dbConnect(SQLite(), dbname = "fcc.sqlite")
+name_csv <- paste0("FCC_fixed_brdbd_", month, "_", year, ".csv")
+system.time(csv_to_sql_db(name_csv, con, 
+                                  db_colnam = use_colnam))
+# dbDisconnect(con)
+process_fcc(con, year = 2018, month = "June", geogr = "ct",
+            tech_exc = c("0", "60", "70"), thresh_down = c(25, 100),
+            thresh_up = c(5, 10))
+
+dbD

@@ -14,8 +14,8 @@ library(processFCC)
 
 ## Background of FCC Fixed Broadband Datasets
 
-The goal of processFCC is to process the fixed broadband data sets from
-the [Federal Communications Commision
+The goal of `processFCC` is to process the fixed broadband data sets
+from the [Federal Communications Commision
 (FCC)](https://www.fcc.gov/general/broadband-deployment-data-fcc-form-477).
 The FCC is the federal agency responsible for implementing and enforcing
 America’s communications laws and regulations. They regulate interstate
@@ -34,18 +34,18 @@ Form 477 it does not mean every location in the Census Block has access
 to the broadband service. It simply means at least one location, person,
 or business in the Census Block has access to broadband at the reported
 speed/technology. It is important to consider this as it may lead to
-overreporting of broadband access within the FCC Fixed Broadband
-Deployment data. FCC data measures where there is access to broadband
-according to Internet service providers. Thus, the FCC data provides a
-picture of broadband claimed availability—what may be possible or what
-is potentially available at the physical or technological level.
+over-reporting of broadband access within the FCC Fixed Broadband
+Deployment data. FCC data measures where there is broadband available
+according to internet service providers. Thus, the FCC data provides a
+picture of claimed availability—what may be possible or what is
+potentially available at the physical or technological level.
 
 Because the forms are submitted biannually, data is provided for June
 and December of each year beginning December 2014, and available through
-December 2020. Prior to December 2019 the datasets have additional
+December 2020. Prior to December 2019 the data sets have additional
 columns indicating different upload and download speeds for consumer
 versus business customers, thus it is important to use the `get_colname`
-function in the package to get the proper column names for the datasets
+function in the package to get the proper column names for the data sets
 you are downloading and working with.
 
 ``` r
@@ -67,22 +67,23 @@ researchers avoid using them. The data cannot be used in its raw form
 available from the FCC website because there are multiple rows per
 Census Block per unique broadband provider, technology, and speed. This
 means there are numerous options for measurement of broadband access
-which could be chosen to fit your research question. Some examples
-include average upload or download speeds, number of providers,
-technology offered, or penetration rate. The raw data has many nuances
-which can be confusing, so it is vital to understand its format before
-rolling it up to fit a research question. Additionally, FCC data are at
-the Census Block level, the smallest unit of Census Geography, which
-gives greater flexibility. It can be rolled up to any higher Census
-Geography such as Census Block Group, Census Tract, or County. This
-package has function to download the desired year/month of the data, get
-the proper column names, put the dataset into a SQLite database, and
-process the data to a smaller level. The processed form of the data is
-one row per specificed census geography, such as census block, and
-counts the number of internet service providers providing internet at or
-above the given download and upload speed thresholds, up to 5 speed
-thresholds combinations can be specified. It is also possible to exclude
-different broadband technologies or filter down to specific states.
+which could be chosen to fit a given research question. The raw data has
+many nuances which can be confusing, so it is vital to understand its
+format before rolling it up to fit a research question. Additionally,
+FCC data are at the Census Block level, the smallest unit of Census
+Geography, which gives greater flexibility. It can be rolled up to any
+higher Census Geography such as Census Block Group, Census Tract, or
+County.
+
+This package has function to download the desired year/month of the
+data, get the proper column names, put the dataset into a SQLite
+database, and process the data to a smaller level. The processed form of
+the data is one row per specified census geography, such as census
+block, and counts the number of internet service providers providing
+internet at or above the given download and upload speed thresholds, up
+to 5 speed thresholds combinations can be specified. It is also possible
+to exclude different broadband technologies or filter down to specific
+states.
 
 ### Census Geography
 
@@ -91,7 +92,7 @@ FIPS code. This 15-digits FIPS code allows us to group the data to a
 bigger geographic level, such as Census Block group or County. The
 15-digit FIPS code works as follows:
 
-    - AABBBCCCCCCDEEE
+    * AABBBCCCCCCDEEE
         - A: state
         - B: county
         - C: Census Tract
@@ -145,24 +146,23 @@ rural-urban lines.
 
 Another reason for the flexibility allowed with technology codes is that
 one may wish to focus only on one type of technology, excluding all
-others, to see where it is available through the country or a state.
+others, to see where it is available throughout the country or a state.
 
 ### Broadband Speeds
 
 Currently adequate broadband service is considered a download speed of
-25 Mbps and upload speed of 3 Mbps. (The FCC definition prior to 2015
-was established in 2010 as 4 Mbps download and 1 Mbps upload.) Required
+25 Mbps and upload speed of 3 Mbps, according to the FCC. Required
 speeds as technology needs continue to grow is a topic of ongoing
-discussion.The consensus is that the average broadband user needs higher
-download speeds than upload, but this may be an outdated understanding
-of consumer needs. The FCC Consumer Broadband Speed Guide indicates that
-a speed threshold of 25/3 Mbps is adequate for activities such as
-general usage, streaming video, video conferencing, and gaming. However,
-the FCC Household Broadband Guide indicates that download speeds of more
-than 25 Mbps may be necessary for households with moderate to high
-broadband use by 4 or more users or devices at a time. On the other
-hand, some say that 25/3 Mbps is an outdated defintion of broadband and
-100/10 Mbps is standard.
+discussion. The consensus is that the average broadband user needs
+higher download speeds than upload, but this may be an outdated
+understanding of consumer needs. The FCC Consumer Broadband Speed Guide
+indicates that a speed threshold of 25/3 Mbps is adequate for activities
+such as general usage, streaming video, video conferencing, and gaming.
+However, the FCC Household Broadband Guide indicates that download
+speeds of more than 25 Mbps may be necessary for households with
+moderate to high broadband use by 4 or more users or devices at a time.
+On the other hand, some say that 25/3 Mbps is an outdated definition of
+broadband and 100/10 Mbps is standard.
 
 With the various speeds in mind, the processing function of this package
 was written to allow for flexibility of user inputted speed thresholds.
@@ -185,29 +185,7 @@ indicates no access to internet at 25/3.
 
 <img src="./map of iowa no sat.png" width="50%" style="display: block; margin: auto;" />
 
-<!-- ![iowa broadband map](./map of iowa no sat.png){:height="36px" width="36px"} -->
-
 # How to use this package
 
-This is a basic example which shows you how to solve a common problem:
-
-``` r
-library(processFCC)
-## basic example code
-
-
-month = "Dec"
-year = 2018
-system.time(download_FCC(year, month)) #time: 
-use_colnam <- get_colname(year, month)
-con <- dbConnect(SQLite(), dbname = "fcc.sqlite")
-name_csv <- paste0("FCC_fixed_brdbd_", month, "_", year, ".csv")
-system.time(csv_to_sql_db(name_csv, con, 
-                                  db_colnam = use_colnam))
-# dbDisconnect(con)
-process_fcc(con, year = 2018, month = "June", geogr = "ct",
-            tech_exc = c("0", "60", "70"), thresh_down = c(25, 100),
-            thresh_up = c(5, 10))
-
-dbDisconnect(con)
-```
+To see how to use this package and what to keep in mind, please see the
+[proccessFCC vignette](./vignettes/vig-processFCC.Rmd)
