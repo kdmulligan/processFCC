@@ -90,7 +90,13 @@ such as calculating the proportion of people within a larger census geography wi
 access to a certain speed or making maps of the number of providers per region. For example,
 here is a map of the state of Iowa at the Census Block level created using the FCC data. Satellite technology was excluded in rolling up the data to a 25/3 threshold. The provider count at 25/3 Mbps was then converted to a binary variable where 1 indicates access to broadband at 25/3 and 0 indicates no access to internet at 25/3.
 
-![iowa broadband map](./map of iowa no sat.png)
+<img src="./map of iowa no sat.png" alt="iowa broadband map" width="200"/>
+
+
+<!-- ![iowa broadband map](./map of iowa no sat.png) -->
+
+
+
 
 
 
