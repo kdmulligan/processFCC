@@ -37,25 +37,8 @@
 #' download/upload speed combination within the specified `geogr` region.
 #'
 #' @return processed csv file to working directory
-#' #' @examples
+#' @examples
 #' \dontrun{
-#' # set month and year of FCC data set to use
-#' month = "December"
-#' year = 2020
-#' # download desired dataset
-#' download_FCC(year, month)
-#' # get proper column names
-#' use_colnam <- get_colname(year, month)
-#' # establish database connection
-#' con <- DBI::dbConnect(SQLite(), dbname = "fcc.sqlite")
-#' # filenames are constructed in the following format within \code{download_FCC}
-#' filename <- paste0("FCC_fixed_brdbd_", month, "_", year, ".csv")
-#' csv_to_sql_db(filename, con, db_colnam = use_colnam)
-#' # the SQL database created with \code{csv_to_sql_db} can be accessed in the
-#' # following manner:
-#' table <- tbl(con, "table_fcc")
-#' # close the connection
-#' dbDisconnect(con)
 #' }
 #' @export
 #' @importFrom dbplyr mutate
@@ -64,7 +47,7 @@
 #' @importFrom data.table as.data.table fwrite
 
 
-process_fcc <- function(con,
+rollup_fcc <- function(con,
                         year,
                         month,
                         state = NULL,
