@@ -2,8 +2,6 @@
 output: github_document
 ---
 
-<!-- README.md is generated from README.Rmd. Please edit that file -->
-
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
@@ -13,13 +11,17 @@ knitr::opts_chunk$set(
   fig.align="center"
 )
 library(knitr)
+library(devtools)
+install_github("kdmulligan/processFCC")
+library(processFCC)
 ```
+
 # Package to Process FCC Fixed Broadband Datasets
 
 ## Installation
 
 You can install the development version of processFCC like so:
-```{r, warning=FALSE, message=FALSE}
+```{r, warning=FALSE, message=FALSE, eval = FALSE}
 install.packages("devtools")
 library(devtools)
 install_github("kdmulligan/processFCC")
