@@ -14,8 +14,8 @@ csv_to_sql_db(
 )
 }
 \arguments{
-\item{csv_file}{Name of csv file to covert to SQL database. This is relative
-to the working directory unless an absolute file path is provided.}
+\item{csv_file}{Name of raw FCC csv file to covert to SQL database. This is
+relative  to the working directory unless an absolute file path is provided.}
 
 \item{con}{A DBIConnection object, as returned by \code{dbConnect}.}
 
