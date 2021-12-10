@@ -45,8 +45,7 @@
 #' @importFrom tidyr replace_na starts_with
 #' @importFrom data.table as.data.table fwrite
 
-
-rollup_fcc <- function(con,
+rollup_FCC <- function(con,
                         year,
                         month,
                         state = NULL,
@@ -85,7 +84,7 @@ rollup_fcc <- function(con,
     # mutate(cb_fips = as.character((cb_fips))) %>%
     mutate(cb_fips = ifelse(nchar(cb_fips) < 15, paste0("0", cb_fips), cb_fips)) %>%
     mutate(cen_geo = substr(cb_fips, start = 1, stop = stp))
-
+  # set indiv variables so sql can access
   d1 = thresh_down[1]
   d2 = thresh_down[2]
   d3 = thresh_down[3]
@@ -106,7 +105,6 @@ rollup_fcc <- function(con,
     # step 1 of data processing NOT filtering state
     dat_sub <- table %>%
       filter(consumer == 1 & (!tech_code %in% tech_exc)) %>%
-      # filter(!tech_code %in% tech_exc) %>%
       select(-c(1)) %>%
       distinct() %>%
       mutate(
@@ -126,7 +124,6 @@ rollup_fcc <- function(con,
     dat_sub <- table %>%
       filter(StateAbbr %in% state) %>%
       filter(consumer == 1 & (!tech_code %in% tech_exc)) %>%
-      # filter(!tech_code %in% tech_exc) %>%
       select(-c(1)) %>%
       distinct() %>%
       mutate(
@@ -177,7 +174,7 @@ rollup_fcc <- function(con,
   output.dat <- output.dat %>%
     rename_at(vars(starts_with("num_prov_")),
               ~ c(paste0("num_prov", thresh_down, "_", thresh_up)))  %>%
-    rename_at(vars(starts_with("cen_geo")), ~ (geogr))
+    rename_at(vars(starts_with("cen_geo")), ~ c(paste0(geogr, "_fips")))
 
   states_to_print <- ifelse(is.null(state), "all", state)
   new_file <- paste0("fcc_processed_", month, year, ".csv")
@@ -187,6 +184,7 @@ rollup_fcc <- function(con,
             "and counts the number of the providers at the paired download,",
             thresh_down, ", and upload,", thresh_up, ", speeds (Mbps).",
             "This new file is saved in the working directory to", new_file, "   "))
+  # write processed data to csv
   fwrite(output.dat,
          file = new_file)
 }

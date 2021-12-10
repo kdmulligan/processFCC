@@ -14,7 +14,10 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup}
+```{r setup, eval=FALSE, warning = FALSE}
+install.packages("devtools")
+library(devtools)
+install_github("kdmulligan/processFCC")
 library(processFCC)
 ```
 

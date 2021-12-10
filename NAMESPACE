@@ -3,7 +3,7 @@
 export(csv_to_sql_db)
 export(download_FCC)
 export(get_colname)
-export(rollup_fcc)
+export(process_fcc)
 importFrom(RSQLite,dbWriteTable)
 importFrom(data.table,as.data.table)
 importFrom(data.table,fwrite)
