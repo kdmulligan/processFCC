@@ -12,10 +12,10 @@ install.packages("devtools")
 #> package 'devtools' successfully unpacked and MD5 sums checked
 #> 
 #> The downloaded binary packages are in
-#>  C:\Users\kaile\AppData\Local\Temp\RtmpKCMaQk\downloaded_packages
+#>  C:\Users\kaile\AppData\Local\Temp\RtmpUBZrsv\downloaded_packages
 library(devtools)
 install_github("kdmulligan/processFCC")
-#>          checking for file 'C:\Users\kaile\AppData\Local\Temp\RtmpKCMaQk\remotes12e467e15fb1\kdmulligan-processFCC-b7a0378/DESCRIPTION' ...  v  checking for file 'C:\Users\kaile\AppData\Local\Temp\RtmpKCMaQk\remotes12e467e15fb1\kdmulligan-processFCC-b7a0378/DESCRIPTION'
+#>          checking for file 'C:\Users\kaile\AppData\Local\Temp\RtmpUBZrsv\remotes517c370e3f8\kdmulligan-processFCC-4d6cb32/DESCRIPTION' ...  v  checking for file 'C:\Users\kaile\AppData\Local\Temp\RtmpUBZrsv\remotes517c370e3f8\kdmulligan-processFCC-4d6cb32/DESCRIPTION'
 #>       -  preparing 'processFCC':
 #>    checking DESCRIPTION meta-information ...     checking DESCRIPTION meta-information ...   v  checking DESCRIPTION meta-information
 #>       -  checking for LF line-endings in source and make files and shell scripts
