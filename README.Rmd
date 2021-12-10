@@ -102,36 +102,11 @@ knitr::include_graphics('./map of iowa no sat.png')
 
 ```
 
-<!-- ![iowa broadband map](./map of iowa no sat.png){:height="36px" width="36px"} -->
-
-
-
-
-
 
 # How to use this package
 
-This is a basic example which shows you how to solve a common problem:
-
-```{r example, eval = FALSE}
-library(processFCC)
-## basic example code
+To see how to use this package and what to keep in mind, please see the [proccessFCC vignette](./vignettes/vig-processFCC.Rmd)
 
 
-month = "Dec"
-year = 2018
-system.time(download_FCC(year, month)) #time: 
-use_colnam <- get_colname(year, month)
-con <- dbConnect(SQLite(), dbname = "fcc.sqlite")
-name_csv <- paste0("FCC_fixed_brdbd_", month, "_", year, ".csv")
-system.time(csv_to_sql_db(name_csv, con, 
-                                  db_colnam = use_colnam))
-# dbDisconnect(con)
-process_fcc(con, year = 2018, month = "June", geogr = "ct",
-            tech_exc = c("0", "60", "70"), thresh_down = c(25, 100),
-            thresh_up = c(5, 10))
-
-dbDisconnect(con)
-```
 
 
