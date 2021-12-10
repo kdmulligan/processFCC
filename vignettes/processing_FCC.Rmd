@@ -1,8 +1,8 @@
 ---
-title: "Processing the FCC data using `processFCC`"
+title: "processing_FCC"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{my-vignette}
+  %\VignetteIndexEntry{processing_FCC}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -13,6 +13,12 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 ```
+
+```{r setup}
+library(processFCC)
+```
+
+
 
 Install and load the package with the following code:
 ```{r eval=FALSE, warning = FALSE}
