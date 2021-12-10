@@ -4,8 +4,8 @@
 #' database before reading in the next chunk. DBI connection and FCC column
 #' names from \code{db_colname} function must be provided.
 #'
-#' @param csv_file Name of csv file to covert to SQL database. This is relative
-#' to the working directory unless an absolute file path is provided.
+#' @param csv_file Name of raw FCC csv file to covert to SQL database. This is
+#' relative  to the working directory unless an absolute file path is provided.
 #' @param con A DBIConnection object, as returned by \code{dbConnect}.
 #' @param pre_process_size Number of rows with which to initialize SQL db.
 #' @param chunk_size Number of rows to include for each chunk
