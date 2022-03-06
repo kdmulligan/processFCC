@@ -4,15 +4,11 @@
 #' rolls up the data based on function inputs.
 #'
 #' @param con A DBIConnection object, as returned by `dbConnect`.
-#'
 #' @param year The year of the FCC data to process.
-#'
 #' @param month The month of the FCC data to process.
-#'
 #' @param state A vector of the state(s) to include in the final data. The
 #' default is NA in order to include all states and territories in the final
 #' data set.
-#'
 #' @param geogr Character representation of Census geography to roll up the
 #' final data set to
 #'
@@ -21,20 +17,18 @@
 #' - cbg = Census Block Group
 #' - ct = Census Tract
 #' - county = County
-#'
 #' @param tech_exc Vector of technology codes to exclude from data when rolling up
 #' if you do not wish to exclude any technology codes input NA or c(NA).
-#'
 #' @param thresh_down Vector of download speeds thresholds. Should be the same
 #' length as `thresh_up` because elements of the vectors will be matched to
 #' count the number of internet providers providing internet at the given
 #' download/upload speed combination within the specified `geogr` region. See
 #' vingette for further explanation of the parameter.
-#'
 #' @param thresh_up Vector of upload speed thresholds. Should be the same
 #' length as `thresh_down` because elements of the vectors will be matched to
 #' count the number of internet providers providing internet at the given
 #' download/upload speed combination within the specified `geogr` region.
+#' @param new_file_name Name of csv file to output to working directory.
 #'
 #' @return processed csv file to working directory
 #' @examples
@@ -52,7 +46,8 @@ rollup_FCC <- function(con,
                         geogr = "cb",
                         tech_exc = c("60", "70"),
                         thresh_down = c(25, 25, 100),
-                        thresh_up = c(3, 5, 100)) {
+                        thresh_up = c(3, 5, 100),
+                        new_file_name = NULL) {
   if (!is.numeric(year))
     stop("Year input should be a numeric")
   if (!is.character(month))
@@ -177,14 +172,17 @@ rollup_FCC <- function(con,
     rename_at(vars(starts_with("cen_geo")), ~ c(paste0(geogr, "_fips")))
 
   states_to_print <- ifelse(is.null(state), "all", state)
+  if(is.null(new_file_name)){
+    new_file_name <- paste0("fcc_processed_", month, year, ".csv")
+  }
   new_file <- paste0("fcc_processed_", month, year, ".csv")
   print(cat("Your processed FCC dataset from", month, year,
             "has", states_to_print, "states and is rolled up to the",
             geogr, "level, excluding (", tech_exc, ") technology codes",
             "and counts the number of the providers at the paired download,",
             thresh_down, ", and upload,", thresh_up, ", speeds (Mbps).",
-            "This new file is saved in the working directory to", new_file, "   "))
+            "This new file is saved in the working directory to", new_file_name, "   "))
   # write processed data to csv
   fwrite(output.dat,
-         file = new_file)
+         file = new_file_name)
 }
