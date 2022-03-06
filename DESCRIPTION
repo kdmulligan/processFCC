@@ -12,7 +12,8 @@ URL: https://github.com/kdmulligan/processFCC
 LazyData: true
 RoxygenNote: 7.1.2
 VignetteBuilder: 
-    knitr
+    knitr,
+    devtools
 Suggests: 
     knitr,
     rmarkdown
