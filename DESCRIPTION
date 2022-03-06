@@ -16,4 +16,5 @@ VignetteBuilder:
     devtools
 Suggests: 
     knitr,
-    rmarkdown
+    rmarkdown, 
+    devtools
