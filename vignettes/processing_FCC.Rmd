@@ -24,7 +24,7 @@ Install and load the package with the following code:
 ```{r eval=FALSE, warning = FALSE}
 install.packages("devtools")
 library(devtools)
-install_github("kdmulligan/processFCC")
+install_github("kdmulligan/processFCC", build_vignettes = TRUE)
 library(processFCC)
 ```
 
