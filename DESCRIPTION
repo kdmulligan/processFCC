@@ -1,11 +1,13 @@
 Package: processFCC
 Type: Package
-Title: Process Fixed Broadband Data from FCC Form 477
+Title: processFCC: cleaning Fixed Broadband Data from FCC Form 477
 Version: 0.1.0
 Author: Kailey Mulligan
 Maintainer: Kailey Mulligan <kailey-mulligan@uiowa.edu>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
+Description: Package to download and process FCC fixed broadband data. The data 
+is downloaded from the FCC website, put into a SQL database in R, and simplified 
+to the number of internet service providers at specified thresholds per Census
+geography unit.
 License: What license is it under?
 Encoding: UTF-8
 URL: https://github.com/kdmulligan/processFCC
