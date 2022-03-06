@@ -47,7 +47,7 @@ download_FCC <- function(year, month){
     url_d <- "https://www.fcc.gov/form477/BroadbandData/Fixed/Dec19/Version%201/US-Fixed-with-Satellite-Dec2019.zip"
   } else if (year == 2020){
     warning("2020 data sets are not in a zipped format and will take significantly longer to download.")
-    url_j <- "https://opendata.fcc.gov/api/views/pp56-kd4g/rows.csv?accessType=DOWNLOAD&sorting=true"
+    url_j <- "https://opendata.fcc.gov/api/views/4kuc-phrr/rows.csv?accessType=DOWNLOAD&sorting=true"
     url_d <- "https://opendata.fcc.gov/api/views/hicn-aujz/rows.csv?accessType=DOWNLOAD&sorting=true"
   }
   to_use <- ifelse(month == "June", url_j, url_d)
@@ -64,4 +64,5 @@ download_FCC <- function(year, month){
     # if file is from 2020 then does not need to be unzipped
     utils::download.file(url = to_use, destfile = name_csv)
   }
+  print(paste0("FCC data from ", month, " ", year, " was downloaded to working directory as filename ", name_csv))
 }
