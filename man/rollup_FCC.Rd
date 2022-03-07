@@ -12,7 +12,8 @@ rollup_FCC(
   geogr = "cb",
   tech_exc = c("60", "70"),
   thresh_down = c(25, 25, 100),
-  thresh_up = c(3, 5, 100)
+  thresh_up = c(3, 5, 100),
+  new_file_name = NULL
 )
 }
 \arguments{
@@ -48,6 +49,8 @@ vingette for further explanation of the parameter.}
 length as `thresh_down` because elements of the vectors will be matched to
 count the number of internet providers providing internet at the given
 download/upload speed combination within the specified `geogr` region.}
+
+\item{new_file_name}{Name of csv file to output to working directory.}
 }
 \value{
 processed csv file to working directory
