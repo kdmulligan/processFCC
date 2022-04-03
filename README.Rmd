@@ -12,7 +12,7 @@ knitr::opts_chunk$set(
 )
 library(knitr)
 library(devtools)
-install_github("kdmulligan/processFCC")
+install_github("kdmulligan/processFCC", build_vignettes = TRUE)
 library(processFCC)
 ```
 
