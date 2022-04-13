@@ -56,9 +56,9 @@ download_FCC <- function(year, month){
   if(year != 2020){
     name_zip <- paste0("FCC_fixed_brdbd_", month, "_", year, ".zip")
     utils::download.file(url = to_use, destfile = name_zip)
-    files <- utils::unzip(name, list = TRUE)[[1]]
+    files <- utils::unzip(name_zip, list = TRUE)[[1]]
     wd <- getwd()
-    utils::unzip(name, files = files, exdir = wd, unzip = "unzip")
+    utils::unzip(name_zip, files = files, exdir = wd, unzip = "unzip")
     file.rename(from = files, to = name_csv)
   } else{
     # if file is from 2020 then does not need to be unzipped
