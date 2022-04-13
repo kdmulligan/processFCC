@@ -59,6 +59,7 @@ download_FCC <- function(year, month){
     files <- utils::unzip(name_zip, list = TRUE)[[1]]
     wd <- getwd()
     utils::unzip(name_zip, files = files, exdir = wd, unzip = "unzip")
+    # utils::zip.file.extract(file = files, zipname = name_zip, dir = wd)
     file.rename(from = files, to = name_csv)
   } else{
     # if file is from 2020 then does not need to be unzipped
