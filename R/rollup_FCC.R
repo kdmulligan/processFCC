@@ -45,8 +45,8 @@ rollup_FCC <- function(con,
                         state = NULL,
                         geogr = "cb",
                         tech_exc = c("60", "70"),
-                        thresh_down = c(25, 25, 100),
-                        thresh_up = c(3, 5, 100),
+                        thresh_down = c(25, 25, 50, 100, 100),
+                        thresh_up = c(3, 5, 10, 10, 100),
                         new_file_name = NULL) {
   if (!is.numeric(year))
     stop("Year input should be a numeric")
