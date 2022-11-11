@@ -26,7 +26,7 @@
 #' @export
 #' @importFrom dplyr mutate %>% select left_join rename filter
 #' @importFrom tigris blocks block_groups tracts counties
-#' @importFrom ggplot2 ggplot geom_sf scale_fill_brewer labs them_void
+#' @importFrom ggplot2 ggplot geom_sf scale_fill_brewer labs theme_void
 
 
 state_map_numprov <- function(dat,
