@@ -13,7 +13,8 @@ URL: https://github.com/kdmulligan/processFCC
 Suggests: 
     devtools,
     knitr,
-    rmarkdown
+    rmarkdown,
+    testthat (>= 3.0.0)
 VignetteBuilder: 
     devtools,
     knitr
@@ -29,3 +30,4 @@ Imports:
     tidyr,
     data.table,
     ggplot2
+Config/testthat/edition: 3
