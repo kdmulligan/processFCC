@@ -10,7 +10,7 @@ csv_to_sql_db(
   pre_process_size = 1000,
   chunk_size = 50000,
   show_progress_bar = TRUE,
-  db_colnam
+  db_colname
 )
 }
 \arguments{
@@ -54,7 +54,7 @@ con <- DBI::dbConnect(SQLite(), dbname = "fcc.sqlite")
 
 # filenames are constructed in the following format within `download_FCC`
 filename <- paste0("FCC_fixed_brdbd_", month, "_", year, ".csv")
-csv_to_sql_db(filename, con, db_colnam = use_colnam)
+csv_to_sql_db(filename, con, db_colname = use_colnam)
 
 # the SQL database created with `csv_to_sql_db` can be accessed in the
 # following manner:
