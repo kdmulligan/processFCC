@@ -52,7 +52,7 @@ rollup_FCC <- function(con,
     stop("Year input should be a numeric")
   if (!is.character(month))
     stop("Month should be a character")
-  if (year < 2015 | year > 2020)
+  if (year < 2015 | year > 2021)
     stop("Column names only provided for FCC data years 2015 through 2020")
   if (!(month == "June" | month == "Dec"))
     stop("Please use month equal to 'June' or 'Dec'")
