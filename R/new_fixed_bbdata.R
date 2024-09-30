@@ -20,7 +20,7 @@
 ## what dates do you want?
 
 
-avail_new_dates <- function(user_name, api_key) {
+avail_dates_newformat <- function(user_name, api_key) {
   api_path = "https://broadbandmap.fcc.gov/api/public/map"
   available_dates <- request(paste0(api_path, "/listAsOfDates")) |>
     req_headers("username" = user_name,
