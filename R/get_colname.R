@@ -19,7 +19,7 @@ get_colname <- function(year, month){
   if(!(month == "June" | month == "Dec")){stop("Please use month equal to 'June' or 'Dec'")}
   if(!is.numeric(year)) stop("Year input should be a numeric")
   if(!is.character(month)) stop("Month should be a character")
-  if(year < 2014 | year > 2020) stop("Column names only provided for FCC data years Dec 2014 through Dec 2020")
+  if(year < 2014 | year > 2021) stop("Column names only provided for FCC data years Dec 2014 through Dec 2020")
   if(year == 2014 & month != "Dec") stop("Data not available for June 2015")
 
   colnam_old <- c("LRN", "prov_id", "FRN", "prov_name", "DBA", "hoco_name",
@@ -43,6 +43,8 @@ get_colname <- function(year, month){
   } else if (year == 2019){
     if(month == "June"){return(colnam_old)} else {return(colnam_new)}
   } else if (year == 2020){
+    return(colnam_new)
+  } else if (year == 2021){
     return(colnam_new)
   }
 }
