@@ -1,0 +1,377 @@
+---
+title: "Untitled"
+format: html
+---
+
+
+```{r setup}
+#program for getting june 2022 and later state-level FCC broadband data from the
+#fcc broadband api, cleaning it, and pushing it to sql
+library(tidyverse)
+library(httr2)
+library(purrr)
+library(magrittr)
+library(here)
+library(tictoc)
+library(crayon)
+library(scales)
+#for filtering
+`%ni%` = negate(`%in%`)
+
+## my api
+```
+
+```{r}
+#for read/write of csv/zip
+base_path <- "C:/Users/kdmulligan/OneDrive - University of Iowa/VA_Docs"
+```
+
+## input values
+
+```{r}
+#api hash_key
+api_key <- "l1uT7ZsUzQ+t9QjQoixlysNCn4izBTGIFQ4ugsahaSw="
+#
+user_name = "kailey654@gmail.com"
+#base url for api queries
+api_path = "https://broadbandmap.fcc.gov/api/public/map"
+```
+
+## what dates do you want?
+
+```{r}
+avail_new_dates <- function(user_name, api_key) {
+  api_path = "https://broadbandmap.fcc.gov/api/public/map"
+  available_dates <- request(paste0(api_path, "/listAsOfDates")) |> 
+    req_headers("username" = user_name,
+                "hash_value" = api_key) |>
+    req_perform() |> 
+    resp_body_json() %$% 
+    plyr::ldply(data, data.frame) %>%
+    filter(data_type == "availability") %>%
+    mutate(as_of_date = ymd(str_sub(as_of_date, end = 10)),
+           date_label = format(as_of_date, format = "%Y_%m")) %>%
+    select(as_of_date, date_label)
+  return(available_dates)
+}
+###
+avail_new_dates(
+  user_name = "kailey654@gmail.com", 
+  api_key = "l1uT7ZsUzQ+t9QjQoixlysNCn4izBTGIFQ4ugsahaSw="
+  )
+```
+
+
+## technology codes
+
+```{r}
+request(paste0(api_path, "/downloads/listAvailabilityData/", date_toget)) |>
+  req_headers("username" = user_name, "hash_value" = api_key) |>
+  req_url_query(category = "State") |>
+  req_perform() |>
+  resp_body_json() %$%
+  data.table::rbindlist(data) %>%
+  filter( file_type == "csv" & subcategory != "Provider List") %>% 
+  distinct(technology_code, technology_code_desc)
+```
+
+
+## get & process data
+
+```{r get_args}
+base_path
+fcc_username = user_name
+api_key
+
+state_abrvs = c("IA")
+state_codes = c(19, 20)
+date_toget = "2022-06-30"
+tech_exc = c(60, 61)
+geogr = "cb"
+thresh_down = c(25, 25, 50, 100, 100)
+thresh_up = c(3, 5, 10, 10, 100)
+#
+```
+
+```{r}
+get_process_new_fbb_dat <- function(
+    wd = getwd(),
+    fcc_username,
+    api_key,
+    date_toget,
+    states = NULL,
+    geogr = "cb",
+    tech_exc = c("60", "70"),
+    thresh_down = c(25, 25, 50, 100, 100),
+    thresh_up = c(3, 5, 10, 10, 100),
+    new_file_name = NULL
+    ) {
+  
+  geo_stp <- if (geogr == "cb") {15
+    } else if (geogr == "cbg") {12
+    } else if (geogr == "ct") {11
+    } else if (geogr == "county") {5}
+  
+  d1 = thresh_down[1]
+  d2 = thresh_down[2]
+  d3 = thresh_down[3]
+  d4 = thresh_down[4]
+  d5 = thresh_down[5]
+  u1 = thresh_up[1]
+  u2 = thresh_up[2]
+  u3 = thresh_up[3]
+  u4 = thresh_up[4]
+  u5 = thresh_up[5]
+  new_col_names <- paste0("num_prov_", thresh_down, "_", thresh_up)
+  ## get correct state codes
+  fips_codes <- tidycensus::fips_codes %>%
+    select(state, state_code, state_name) %>%
+    distinct()
+  
+  if(is.null(states)) {
+    state_codes <- fips_codes %>% 
+      pull(state_code)
+  } else {
+    state_codes <- fips_codes %>% 
+      filter(state %in% states) %>% 
+      pull(state_code)
+  }
+  ## get file IDs to download
+  api_path = "https://broadbandmap.fcc.gov/api/public/map"
+  file_ids =
+    request(paste0(api_path, "/downloads/listAvailabilityData/", date_toget)) |>
+    req_headers("username" = fcc_username, "hash_value" = api_key) |>
+    req_url_query(category = "State") |>
+    req_perform() |>
+    resp_body_json() %$%
+    data.table::rbindlist(data) %>%
+    filter(
+      file_type == "csv"
+      & subcategory != "Provider List"
+      & !technology_code %in% tech_exc #excluding all satellite
+      & state_fips %in% state_codes
+    ) %>%
+    select(file_id, file_name, technology_code_desc, state_name)
+  
+  ## download data in file_ids
+  for(i in 1:nrow(file_ids)) {
+    tic(cyan("processing file:", file_ids[i,4], file_ids[i,3], ", file", i, "out of", 
+             nrow(file_ids), "(", percent(i / nrow(file_ids), accuracy = 0.1), ")" ))
+    ## download files
+    request(paste0(api_path, "/downloads/downloadFile/availability/", file_ids[i, 1])) |>
+      req_headers("username" = user_name, "hash_value" = api_key) |>
+      req_perform() %>%
+      resp_body_raw() %>%
+      brio::write_file_raw(., paste0(wd, "/out.zip"))
+    ## unzip files
+    unzip(
+      zipfile = paste0(wd, "/out.zip"),
+      exdir = wd
+    )
+    ## read csv, filter, get distinct
+    current_tech_table <-
+      readr::read_csv(paste0(wd, "/", file_ids[i, 2], ".csv"), show_col_types = FALSE) %>%
+      filter(business_residential_code %in% c("R", "X")) %>% #residential only or both
+      mutate(block_geoid = str_pad(block_geoid, width = 15, side = "left", pad = "0")) %>% 
+      mutate(cen_geo = substr(block_geoid, start = 1, stop = geo_stp)) %>% 
+      rename(max_down = max_advertised_download_speed, max_up = max_advertised_upload_speed) %>% 
+      select(cen_geo, frn, provider_id, brand_name, technology, max_down, 
+             max_up, state_abbr = state_usps) %>% 
+      distinct() %>% 
+      filter(!(max_down == 0 & max_up == 0))
+        ## distinct tech/speed providers per cen_geo
+        ## if one provider offers multiple speeds then in dataset > 1
+    
+    #delete .zip and .csv
+    file.remove(paste0(wd, "/out.zip"))
+    file.remove(paste0(wd, "/", file_ids[i, 2], ".csv"))
+    
+    #concatenating all state technologies
+    if (i == 1) {
+      bband_all_tech = current_tech_table
+    } else {
+      bband_all_tech = bind_rows(bband_all_tech, current_tech_table)
+    }
+    toc()
+  }
+  ###
+  output_dat <- 
+    bband_all_tech %>% 
+    select(cen_geo, frn, provider_id, brand_name, max_down, max_up, state_abbr) %>% 
+    distinct() %>% 
+    mutate( ## indicators for each speed
+      speed1 = if_else((max_down >= d1) & (max_up >= u1), 1, 0),
+      speed2 = if_else((max_down >= d2) & (max_up >= u2), 1, 0),
+      speed3 = if_else((max_down >= d3) & (max_up >= u3), 1, 0),
+      speed4 = if_else((max_down >= d4) & (max_up >= u4), 1, 0),
+      speed5 = if_else((max_down >= d5) & (max_up >= u5), 1, 0)
+      ) %>% 
+    group_by(cen_geo, frn, state_abbr) %>%
+      summarise(
+        speed1_uniq = max(speed1, na.rm = TRUE),
+        speed2_uniq = max(speed2, na.rm = TRUE) ,
+        speed3_uniq = max(speed3, na.rm = TRUE),
+        speed4_uniq = max(speed4, na.rm = TRUE),
+        speed5_uniq = max(speed5, na.rm = TRUE)
+      ) %>% 
+    group_by(cen_geo, state_abbr) %>%  ## count by census geography
+    summarize(
+      num_prov_1 = sum(speed1_uniq),
+      num_prov_2 = sum(speed2_uniq),
+      num_prov_3 = sum(speed3_uniq),
+      num_prov_4 = sum(speed4_uniq),
+      num_prov_5 = sum(speed5_uniq)
+    ) %>% 
+    rename(
+      !!rlang::as_name(new_col_names[1]) := num_prov_1,
+      !!rlang::as_name(new_col_names[2]) := num_prov_2,
+      !!rlang::as_name(new_col_names[3]) := num_prov_3,
+      !!rlang::as_name(new_col_names[4]) := num_prov_4,
+      !!rlang::as_name(new_col_names[5]) := num_prov_5,
+      !!paste0(geogr, "_fips") := cen_geo
+    ) %>% 
+    ungroup()
+  ##
+  states_to_print <- ifelse(is.null(states), "all", states)
+  if(is.null(new_file_name)){
+    new_file_name <- paste0("fcc_fixed_bb_", str_sub(date_toget, 1, 7), ".csv")
+  }
+  print(paste0("Your processed FCC dataset from ", str_sub(date_toget, 1, 7),
+            " has states ", str_flatten(states_to_print, collapse = ", ", last = ", and "), 
+            ". It is rolled up to the ", geogr, " level, excluding ", 
+            str_flatten(tech_exc, collapse = ", ", last = " and "), " technology codes ",
+            "and counts the number of the providers (frn) at the following paired download/upload speeds (Mbps): ",
+            str_flatten(paste0(thresh_down, "/", thresh_up), collapse = ", ", last = " and "), ". ",
+            "This new file is saved at ", wd, "/", new_file_name))
+  # write processed data to csv
+  write_csv(output_dat,
+         file = paste0(wd, "/", new_file_name))
+}
+
+```
+
+```{r}
+str_flatten(paste0(thresh_down, "/", thresh_up), collapse = ", ", last = " and ")
+# thresh_down
+# thresh_up
+```
+
+
+
+## process data
+
+```{r, eval = FALSE}
+
+#for identifying census blocks with zero population: 
+  #https://www.census.gov/geographies/reference-files/2020/geo/2020addcountlisting.html
+#=====================
+tic(bgBlack$white("the whole loop"))
+for (date in 4){#change to 1:nrow(available_dates) to do all
+  tic(green(paste0("date ", available_dates[date, 1])))
+  for (st in 1:nrow(state_abb)){#change to 1:nrow(state_abb) to do all
+    #======
+    #df of file_ids for iterating over and identifying .csv names
+    #this is where most of the filtering occurs
+    file_ids = request(paste0(api_path, "/downloads/listAvailabilityData/",
+                              available_dates[date, 1])) |> 
+      req_headers("username" = user_name,
+                  "hash_value" = api_key) |> 
+      req_url_query(category = "State") |> 
+      req_perform() |> 
+      resp_body_json() %$%
+      data.table::rbindlist(data) %>%
+      filter(file_type == "csv"
+             & subcategory != "Provider List"
+             & technology_code %ni% c(60, 61)#excluding all satellite
+             & state_fips == state_abb[st,2]) %>%
+      select(file_id, file_name, technology_code_desc)
+    #======
+    tic(bgWhite$black(state_abb[st,3], st, "out of 51 (", percent(st / 51, accuracy = 0.1), ")"))
+    for (i in 1:nrow(file_ids)){
+      tic(cyan("get .zip, read.csv,", state_abb[st,3], available_dates[date, 1], file_ids[i,3], "loop", i))
+      #api query returns a .zip of a .csv and writes it to the temporary folder
+      request(paste0(api_path, "/downloads/downloadFile/availability/", 
+                     file_ids[i,1])) |> 
+        req_headers("username" = user_name,
+                    "hash_value" = api_key) |> 
+        req_perform() %>%
+        resp_body_raw() %>%
+        brio::write_file_raw(., paste0(base_path, "/temp_folder", "/out.zip"))
+      #unzip 
+      unzip(zipfile = paste0(base_path, "/temp_folder", "/out.zip"),
+            exdir = paste0(base_path, "/temp_folder"))
+      #read csv
+      current_table <- readr::read_csv(paste0(base_path, "/temp_folder/", file_ids[i,2], ".csv"),
+                                       show_col_types = FALSE) %>%
+        filter(business_residential_code %in% c("R", "X")) %>% #residential only or both
+        select(-c(location_id, business_residential_code, h3_res8_id)) %>%#filtering-out columns that 
+        #give duplicate rows per census block
+        distinct# unclear if this is the best move; probably slows things down some
+      #delete .zip and .csv
+      file.remove(paste0(base_path, "/temp_folder/out.zip"))
+      file.remove(paste0(base_path, "/temp_folder/", file_ids[i,2], ".csv"))
+      toc()
+      #concatenating all state technologies
+      if(i == 1){
+        bband_summary = current_table
+      }
+      else {
+        bband_summary = bband_summary %>% 
+          bind_rows(., current_table)
+      }
+      #summarise to census block
+      output_table = bband_summary %>%
+        mutate(meets_25_3 = if_else(max_advertised_download_speed >= 25 
+                                    & max_advertised_upload_speed >= 3, 1, 0),
+               meets_25_5 = if_else(max_advertised_download_speed >= 25 
+                                    & max_advertised_upload_speed >= 5, 1, 0),
+               meets_100_20 = if_else(max_advertised_download_speed >= 100 
+                                      & max_advertised_upload_speed >= 20, 1, 0),
+               meets_100_100 = if_else(max_advertised_download_speed >= 100 
+                                       & max_advertised_upload_speed >= 20, 1, 0)) %>%
+        group_by(block_geoid, state_usps) %>%
+        summarise(n_25_3 = sum(meets_25_3),
+                  n_25_5 = sum(meets_25_5),
+                  n_100_20 = sum(meets_100_20),
+                  n_100_100 = sum(meets_100_100),
+                  n_prov = n()) %>%
+        rename_with(., ~ paste0(.x, "_", available_dates[date, 2]),
+                    contains(c("n_25", "n_100", "prov"))) %>%
+        mutate(block_geoid = as.character(block_geoid),
+               state_fips = str_sub(block_geoid, end = 2))
+    }
+    toc()
+    #-------------
+    #for loop to write state to sql
+    #id for table
+    table_id <- DBI::Id(schema = "crh_eval", table = paste0("bband_summary_", 
+                                                            available_dates[date, 2]))
+    tic(magenta(paste0("pushing ", state_abb[st,3], " to sql")))
+    #sequence for iterating over
+    tab_seq <- c(seq(0, nrow(output_table), 10000), nrow(output_table))
+    #
+    for(j in 1:length(tab_seq)){
+      k = j + 1
+      if (tab_seq[j] < max(tab_seq)){
+        DBI::dbWriteTable(conn = oabi_con,
+                          name = table_id,
+                          value = output_table[(tab_seq[j] + 1):(tab_seq[k]),],
+                          append = TRUE)
+      }
+      else{}
+    }
+    toc()
+    rm(current_table)
+    rm(output_table)
+    rm(bband_summary)
+    gc()
+  }
+  toc()
+  rm(current_table)
+  rm(output_table)
+  rm(bband_summary)
+  gc()
+}
+toc()
+```
+
