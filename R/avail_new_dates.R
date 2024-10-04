@@ -8,12 +8,7 @@
 #'
 #' @return tibble of dates available for new FCC data format
 #' @examples
-#' \dontrun{
-  avail_new_dates(
-    user_name = "email@location.com",
-    api_key = "longstringofapicharacters"
-  )
-#' }
+#' \dontrun{ avail_new_dates( user_name = "email@location.com", api_key = "longstringofapicharacters")}
 #' @export
 #' @importFrom httr2 request req_headers resp_body_json req_perform
 #' @importFrom plyr ldply
