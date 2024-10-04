@@ -48,6 +48,8 @@ download_FCC <- function(year, month){
   } else if (year == 2020){
     warning("2020 data sets are not in a zipped format and will take significantly longer to download.")
     url_j <- "https://opendata.fcc.gov/api/views/4kuc-phrr/rows.csv?accessType=DOWNLOAD&sorting=true"
+
+
     url_d <- "https://opendata.fcc.gov/api/views/hicn-aujz/rows.csv?accessType=DOWNLOAD&sorting=true"
   }
   to_use <- ifelse(month == "June", url_j, url_d)
