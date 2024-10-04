@@ -25,7 +25,7 @@
 #' @importFrom stringr str_detect str_trim str_sub
 #' @importFrom RSQLite dbWriteTable
 
-old_fcc_links <- function(year = NULL, month = NULL, most_recent = FALSE) {
+old_FCC_links <- function(year = NULL, month = NULL, most_recent = FALSE) {
   url <- "https://www.fcc.gov/general/broadband-deployment-data-fcc-form-477#:~:text=Download%20data%20on%20where%20broadband%20providers%20offer%20Internet%20access%20service"
   fcc_page <- rvest::read_html(url)
   if(!(month == "June" | month == "Dec")){stop("Please use month equal to 'Jun' or 'Dec'")}
