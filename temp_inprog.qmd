@@ -37,29 +37,7 @@ user_name = "kailey654@gmail.com"
 api_path = "https://broadbandmap.fcc.gov/api/public/map"
 ```
 
-## what dates do you want?
 
-```{r}
-avail_new_dates <- function(user_name, api_key) {
-  api_path = "https://broadbandmap.fcc.gov/api/public/map"
-  available_dates <- request(paste0(api_path, "/listAsOfDates")) |> 
-    req_headers("username" = user_name,
-                "hash_value" = api_key) |>
-    req_perform() |> 
-    resp_body_json() %$% 
-    plyr::ldply(data, data.frame) %>%
-    filter(data_type == "availability") %>%
-    mutate(as_of_date = ymd(str_sub(as_of_date, end = 10)),
-           date_label = format(as_of_date, format = "%Y_%m")) %>%
-    select(as_of_date, date_label)
-  return(available_dates)
-}
-###
-avail_new_dates(
-  user_name = "kailey654@gmail.com", 
-  api_key = "l1uT7ZsUzQ+t9QjQoixlysNCn4izBTGIFQ4ugsahaSw="
-  )
-```
 
 
 ## technology codes
@@ -255,6 +233,83 @@ str_flatten(paste0(thresh_down, "/", thresh_up), collapse = ", ", last = " and "
 # thresh_down
 # thresh_up
 ```
+
+
+```{r}
+c(html_elements(fcc_page, "p")[10][1])[[1]]
+html_elements(fcc_page, "p")
+html_nodes(fcc_page, "p")
+library(rvest)
+# pg <- read_html("https://en.wikipedia.org/wiki/Main_Page")
+links <- html_nodes(fcc_page, "p")
+
+list <- xml2::xml_children(links) %>% xml2::as_list() 
+xml2::xml_children(links) %>% html_nodes("href")
+
+
+old_dat_ver <-
+  fcc_page %>%
+  html_elements("p") %>%
+  html_elements("a") %>% 
+  html_text() %>% 
+  tibble(text = .) %>% 
+  mutate(
+    keep = str_detect(text, "Jun|Dec") & str_detect(lag(text), "without", negate = TRUE),
+    rn = row_number()
+    ) %>% 
+  filter(keep) %>% 
+  select(-keep) %>% 
+  mutate(
+    text = str_trim(text, side = "both"),
+    date = str_sub(text, 1, 6),
+    version = if_else(str_detect(text, "v"), str_sub(text, -1, -1), "1")
+  ) %>% 
+  group_by(text) %>% 
+  mutate(ct = row_number()) %>% 
+  ungroup() %>% 
+  filter(ct == 1) %>% 
+  select(-ct)
+
+links <-
+  fcc_page %>%
+  html_elements("p") %>%
+  html_elements("a") %>%
+  html_attr("href") %>% 
+  tibble(links = .) %>% 
+  mutate(rn = row_number())
+
+old_dat_ver %>% 
+  left_join(links, join_by(rn)) %>% 
+  arrange(date, desc(version))
+
+old_dat_ver %>% 
+  group_by(date) %>% 
+  arrange(date, desc(version)) %>% 
+  mutate(most_recent = if_else(version == max(version), 1, 0)) %>% 
+  left_join(links, join_by(rn)) %>% 
+  filter(most_recent == 1) %>% 
+  distinct(text, links)
+
+```
+
+```{r}
+html_elements(fcc_page, "p") |>
+  html_text2() # %>% 
+  # writeLines()
+
+list[[25]]
+data.frame(t(sapply(list, str_flatten_comma)))
+
+as.data.frame(xml2::xml_children(links))
+xml2::xml_text(xml2::xml_children(links))
+
+bind_rows(lapply(xml2::xml_children(links), function(x) data.frame(as.list(x), stringsAsFactors=FALSE)))
+
+links %>% 
+  map(xml2::xml_attrs) %>% 
+  map_df(~as.list(.))
+```
+
 
 
 
