@@ -1,4 +1,4 @@
-#' @title Processing FCC data
+#' @title Processing fixed broadband FCC data in the old data format
 #'
 #' @description Takes connection to SQLite database with FCC file and processes/
 #' rolls up the data based on function inputs.
