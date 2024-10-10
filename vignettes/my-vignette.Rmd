@@ -1,0 +1,66 @@
+---
+title: "How to use the updated `processFCC` package"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{my-vignette}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(processFCC)
+```
+
+
+Install and load the package with the following code:
+
+```{r eval=FALSE, warning = FALSE}
+install.packages("devtools")
+library(devtools)
+install_github("kdmulligan/processFCC", build_vignettes = TRUE)
+library(processFCC)
+```
+
+One of the first things you will need to do is decide which time points of the 
+FCC fixed broadband data you wish to use and process. Use `new_or_old_FCC()` to
+check which dates are available and also the format (new or old) that should be 
+used to process the data. The output of the function tells you the availables 
+dates, the format, the function to use to process the data, and the website if
+you would like to read more.
+
+***explain why there are new and old formats***
+
+```{r}
+new_or_old_FCC()
+```
+
+Dates from December 2021 and prior use the old format whereas dates June 2022 
+and more recent use the new format.
+
+If you wish to use a time point of data in the "old" format you will need to use
+the following functions: `old_FCC_links()`, `csv_to_sql_db()`, and 
+`rollup_old_FCC()`.
+
+For a time point of data in the "new" format you will need functions: 
+`rollup_new_FCC()`. The simplest way to access the new data is to use the Public 
+Data API. To do this you will have to create an account and setup an API key. 
+Two of the arguments in `rollup_new_FCC()` are your FCC account username and
+your API key so this step is necessary in order to use the function. To create 
+an account go to https://broadbandmap.fcc.gov/login and then click "Create an 
+account" in the bottom right of the sign-in box.
+
+
+use this to right the instructions.
+
+https://us-fcc.app.box.com/v/bdc-public-data-api-spec
+
+
+
+
