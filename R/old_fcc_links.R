@@ -26,9 +26,13 @@
 #' @importFrom RSQLite dbWriteTable
 
 old_FCC_links <- function(year = NULL, month = NULL, most_recent = FALSE) {
+
+  if(!is.null(month)){
+    if(!(month == "Jun" | month == "Dec")){stop("Please use month equal to 'Jun' or 'Dec'")}
+  }
+
   url <- "https://www.fcc.gov/general/broadband-deployment-data-fcc-form-477#:~:text=Download%20data%20on%20where%20broadband%20providers%20offer%20Internet%20access%20service"
   fcc_page <- rvest::read_html(url)
-  if(!(month == "June" | month == "Dec")){stop("Please use month equal to 'Jun' or 'Dec'")}
 
   old_dat_ver <-
     fcc_page %>%
@@ -44,10 +48,11 @@ old_FCC_links <- function(year = NULL, month = NULL, most_recent = FALSE) {
     select(-keep) %>%
     mutate(
       text = str_trim(text, side = "both"),
-      date = str_sub(text, 1, 6),
+      mnt = str_sub(text, 1, 3),
+      yr = paste0("20", str_sub(text, 5, 6)),
       version = if_else(str_detect(text, "v"), str_sub(text, -1, -1), "1")
     ) %>%
-    group_by(text) %>%
+    group_by(mnt, yr, version) %>%
     mutate(ct = row_number()) %>%
     ungroup() %>%
     filter(ct == 1) %>%
@@ -61,19 +66,12 @@ old_FCC_links <- function(year = NULL, month = NULL, most_recent = FALSE) {
     tibble(link = .) %>%
     mutate(rn = row_number())
 
-  old_dat_ver %>%
-    left_join(links, join_by(rn)) %>%
-    arrange(date, desc(version))
-
   temp <- old_dat_ver %>%
-    group_by(date) %>%
-    arrange(date, desc(version)) %>%
+    group_by(mnt, yr) %>%
+    arrange(desc(yr), mnt, desc(version)) %>%
     mutate(recent = if_else(version == max(version), 1, 0)) %>%
     left_join(links, join_by(rn)) %>%
-    ungroup() %>%
-    mutate(
-      mnt = str_sub(date, 1, 3),
-      yr = paste0("20", str_sub(date, 5, 6)))
+    ungroup()
 
   # month = NULL
   month = if(is.null(month)) {c("Jun", "Dec")} else{month}
@@ -85,9 +83,7 @@ old_FCC_links <- function(year = NULL, month = NULL, most_recent = FALSE) {
   dat <- temp %>%
     filter(recent %in% most_recent) %>%
     filter(yr %in% year, mnt %in% month) %>%
-    select(yr, mnt, version, recent, link) %>%
-    arrange(yr, desc(mnt), version)
+    select(yr, mnt, version, recent, link)
+
   return(dat)
 }
-
-dwnld_old_fcc()
