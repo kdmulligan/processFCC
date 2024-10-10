@@ -5,7 +5,7 @@
 #' names from \code{db_colname} function must be provided.
 #'
 #' @param csv_file Name of raw FCC csv file to covert to SQL database. This is
-#' relative  to the working directory unless an absolute file path is provided.
+#' relative to the working directory unless an absolute file path is provided.
 #' @param con A DBIConnection object, as returned by \code{dbConnect}.
 #' @param pre_process_size Number of rows with which to initialize SQL db.
 #' @param chunk_size Number of rows to include for each chunk
@@ -49,12 +49,16 @@
 
 csv_to_sql_db <- function(csv_file, con, pre_process_size = 1000,
                           chunk_size = 50000, show_progress_bar = TRUE,
-                          db_colname){
+                          year, month){
+  yr = year
+  mnt = month
+  db_colname <- get_colname(year = yr, month = mnt)
   # read first chunk of data
   df <- read_delim(csv_file, delim = ",", n_max = pre_process_size,
                    col_names = db_colname, skip = 1)
   # write first chunk to the SQL table
-  dbWriteTable(conn = con, name = "table_fcc", value = df, overwrite = TRUE)
+  tbl_name = paste0("fcc_", yr, "_", mnt)
+  dbWriteTable(conn = con, name = tbl_name, value = df, overwrite = TRUE)
 
   # readr chunk functionality to process rest of data
   read_delim_chunked(
@@ -66,6 +70,8 @@ csv_to_sql_db <- function(csv_file, con, pre_process_size = 1000,
     progress = show_progress_bar,
     col_names = names(attr(df, "spec")$cols)
   )
+
+  print(paste0("Table ", tbl_name, " has been added to the data base at ", con@dbname))
 }
 
 #' Callback function for \code{csv_to_sql_db} that appends new sections to the
