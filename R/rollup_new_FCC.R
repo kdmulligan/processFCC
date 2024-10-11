@@ -6,9 +6,9 @@
 #' @param wd description
 #' @param fcc_username Username for existing FCC account
 #' @param api_key API key for accessing FCC data. Generated within FCC account.
-#' @param date_toget year-month-day character date from `as_of_date` column
-#' outputted from `avail_new_dates()` function.
-#' @param state A vector of the state(s) abbreviations to include in the final data. The
+#' @param get_year year character for the year of data to process
+#' @param get_months year character for the year of data to process
+#' @param states A vector of the state(s) abbreviations to include in the final data. The
 #' default is NA in order to include all states and territories in the final
 #' data set.
 #' @param geogr Character representation of Census geography to roll up the
@@ -30,7 +30,7 @@
 #' length as `thresh_down` because elements of the vectors will be matched to
 #' count the number of internet providers providing internet at the given
 #' download/upload speed combination within the specified `geogr` region.
-#' @param new_file_name Name of csv file to output to working directory.
+#' @param save_csv Logical for whether or not to save CSV to your working directory.
 #'
 #' @return tibble of dates available for new FCC data format
 #' @examples
@@ -187,9 +187,6 @@ rollup_new_FCC <- function(
     ungroup()
   ##
   states_to_print <- ifelse(is.null(states), "all", states)
-  if(is.null(new_file_name)){
-    new_file_name <- paste0("fcc_fixed_bb_", str_sub(date_toget, 1, 7), states_to_print, ".csv")
-  }
 
   print(paste0("Your processed FCC dataset from ", str_sub(date_toget, 1, 7),
                " has states ", str_flatten(states_to_print, collapse = ", ", last = ", and "),
@@ -198,6 +195,7 @@ rollup_new_FCC <- function(
                "and counts the number of the providers (frn) at the following paired download/upload speeds (Mbps): ",
                str_flatten(paste0(thresh_down, "/", thresh_up), collapse = ", ", last = " and "), ". "))
   if(save_csv == TRUE){
+    new_file_name <- paste0("fcc_fixed_bb_", str_sub(date_toget, 1, 7), states_to_print, ".csv")
     # write processed data to csv
     write_csv(output_dat,
               file = paste0(wd, "/", new_file_name))
