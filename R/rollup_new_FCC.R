@@ -45,13 +45,14 @@ rollup_new_FCC <- function(
     wd = getwd(),
     fcc_username,
     api_key,
-    date_toget,
+    get_year,
+    get_month,
     states = NULL,
     geogr = "cb",
     tech_exc = c("60", "70"),
     thresh_down = c(25, 25, 50, 100, 100),
     thresh_up = c(3, 5, 10, 10, 100),
-    new_file_name = NULL
+    save_csv = FALSE
 ) {
 
   geo_stp <- if (geogr == "cb") {15
@@ -79,10 +80,16 @@ rollup_new_FCC <- function(
     state_codes <- fips_codes %>%
       pull(state_code)
   } else {
-    state_codes <- fips_codes %>%
-      filter(state %in% states) %>%
+    state_codes <- fips_codes |>
+      filter(state %in% states) |>
       pull(state_code)
   }
+  ## set date
+  available_dates <- avail_new_dates(fcc_username = fcc_username, api_key = api_key)
+  date_toget <- available_dates |>
+    filter(yr == get_year & mnt_lab == get_month) |>
+    pull(as_of_date)
+
   ## get file IDs to download
   api_path = "https://broadbandmap.fcc.gov/api/public/map"
   file_ids =
@@ -181,16 +188,22 @@ rollup_new_FCC <- function(
   ##
   states_to_print <- ifelse(is.null(states), "all", states)
   if(is.null(new_file_name)){
-    new_file_name <- paste0("fcc_fixed_bb_", str_sub(date_toget, 1, 7), ".csv")
+    new_file_name <- paste0("fcc_fixed_bb_", str_sub(date_toget, 1, 7), states_to_print, ".csv")
   }
+
   print(paste0("Your processed FCC dataset from ", str_sub(date_toget, 1, 7),
                " has states ", str_flatten(states_to_print, collapse = ", ", last = ", and "),
                ". It is rolled up to the ", geogr, " level, excluding ",
                str_flatten(tech_exc, collapse = ", ", last = " and "), " technology codes ",
                "and counts the number of the providers (frn) at the following paired download/upload speeds (Mbps): ",
-               str_flatten(paste0(thresh_down, "/", thresh_up), collapse = ", ", last = " and "), ". ",
-               "This new file is saved at ", wd, "/", new_file_name))
-  # write processed data to csv
-  write_csv(output_dat,
-            file = paste0(wd, "/", new_file_name))
+               str_flatten(paste0(thresh_down, "/", thresh_up), collapse = ", ", last = " and "), ". "))
+  if(save_csv == TRUE){
+    # write processed data to csv
+    write_csv(output_dat,
+              file = paste0(wd, "/", new_file_name))
+  }
+
+
+  return(output_dat)
+
 }
