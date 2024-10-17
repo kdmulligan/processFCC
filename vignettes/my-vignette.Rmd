@@ -24,7 +24,7 @@ Install and load the package with the following code:
 ```{r eval=FALSE, warning = FALSE}
 install.packages("devtools")
 library(devtools)
-install_github("kdmulligan/processFCC", build_vignettes = TRUE)
+install_github("kdmulligan/processFCC")
 library(processFCC)
 ```
 
@@ -35,19 +35,13 @@ used to process the data. The output of the function tells you the available
 dates, the format, the function to use to process the data, and the website if
 you would like to read more.
 
-***explain why there are new and old formats***
-
-```{r}
-new_or_old_FCC()
-```
-
 Dates from December 2021 and prior use the old format whereas dates June 2022 
 and more recent use the new format.
 
 ## New FCC data format
 
-For a time point of data in the "new" format you will need functions: 
-`rollup_new_FCC()`. The most efficient way to work with the new FCC data is the
+For a time point of data in the "new" format you will need functions: `avail_new_dates()`
+and `rollup_new_FCC()`. The most efficient way to work with the new FCC data is the
 public data application programming interface (API). When using the API you will
 not have to download each data file individually from the website.
 
@@ -65,6 +59,34 @@ to access the database.
 
 For more information visit the [FCC API Instructions](https://us-fcc.app.box.com/v/bdc-public-data-api-spec)
 
+Use `avail_new_dates()` to see what dates are available in the new FCC data format
+
+```{r, eval=FALSE, warning = FALSE}
+avail_new_dates(
+  fcc_username = ,
+  api_key = 
+)
+```
+
+If you already know what date you would like to process you can move right to using `rollup_new_FCC()`
+
+```{r, eval=FALSE, warning = FALSE}
+rollup_new_FCC(
+  wd = getwd(),
+  fcc_username,
+  api_key,
+  get_year = "2021",
+  get_month = "Jun",
+  states = c("IL", "WI"),
+  geogr = "cb",
+  tech_exc = c("60", "70"),
+  thresh_down = c(25, 25, 50, 100, 100),
+  thresh_up = c(3, 5, 10, 10, 100),
+  save_csv = FALSE
+)
+```
+
+
 ## Old FCC data format
 
 If you wish to use a time point of data in the "old" format you will need to use
@@ -77,15 +99,15 @@ and months will be output. Set `most_recent` to TRUE in order to only get the
 link for the most recent version of the dataset(s), otherwise all available
 versions will be output.
 
-```{r}
+```{r, eval=FALSE, warning = FALSE}
 old_FCC_links(year = 2020, month = NULL, most_recent = TRUE)
 ```
 
 Based on the year and month combination you would like to process, copy the
 link from the `old_FCC_links()` output, go to the website, and download the US - 
 Fixed with Satellite data set under the "Fixed Broadband Deployment Block Data" 
-header. The code should still work if you decide to work with a state-level data set but the
-code is originally designed to work with the U.S. data set.
+header. The code should still work if you decide to work with a state-level data 
+set but the code is originally designed to work with the U.S. data set.
 Once on the website from `old_FCC_links()`, the link for the csv file 
 may take you to dropbox. In this case you will need to click on the 3 dots icon 
 on the top bar of the page and then click download.
@@ -94,9 +116,8 @@ Move the downloaded ZIP file and unzip the inner CSV file to the same working
 directory as your R file for processing the data otherwise you should set the 
 argument `csv_file` to the full direct path to the CSV file.
 
-```{r}
+```{r, eval=FALSE, warning = FALSE}
 fcc_con <- dbConnect(SQLite(), dbname = "fcc.sqlite")
-# showTables(fcc_con)
 dbListTables(fcc_con)
 
 csv_to_sql_db(csv_file = "C:/Users/kaile/Downloads/AK-Fixed-Jun2020-v2.csv", 
@@ -116,9 +137,8 @@ combinations for download/upload speeds: 25/3, 25/5, 50/5, 75/10, and
 100/100 Mbps. The processed data will count the number of providers
 within the census tract providing broadband at the thresholds.
 
-```{r, eval = FALSE}
-# processed_dat <- 
-  rollup_old_FCC(
+```{r, eval=FALSE, warning = FALSE}
+processed_dat <- rollup_old_FCC(
     con = fcc_con,
     table_in_con = "fcc_2020_Jun",
     year = 2020, month = "Jun",
@@ -130,29 +150,14 @@ within the census tract providing broadband at the thresholds.
 head(processed_dat)
 ```
 
-If you are done working with the SQLite database, be sure to close the connection. 
-You may also want to remove the sqlite, zip, and raw csv files from your working
-directory because they are considerably large and take up a lot of
-space.
+If you are done working with the SQLite database, be sure to disconnect from the 
+database with `dbDisconnect()`. You may also want to remove the sqlite, zip, 
+and raw csv files from your working directory because they are considerably 
+large and take up a lot of space.
 
 ```{r, eval = FALSE}
 dbDisconnect(con)
-
 file.remove("fcc.sqlite")
-file.remove(name.csv)
-name_zip <- paste0("FCC_fixed_brdbd_", month, "_", year, ".zip")
-file.remove(name_zip)
 ```
 
-```{r}
-ak_dat <- read_csv("C:/Users/kaile/Downloads/IA-Fixed-Jun2020-v2.csv")
-
-ak_dat %>% 
-  distinct(Provider_Id, FRN) %>% 
-  arrange(Provider_Id) %>% 
-  count(FRN) %>% 
-  filter(n > 1)
-
-ak_dat %>% filter(FRN == "0002587863") %>% arrange(Provider_Id)
-```
 
