@@ -3,12 +3,11 @@
 #' @description Show all dates available for fixed broadband data in the new
 #' format from the FCC
 #'
-#' @param wd description
 #' @param fcc_username Username for existing FCC account
 #' @param api_key API key for accessing FCC data. Generated within FCC account.
-#' @param get_year year character for the year of data to process
-#' @param get_months year character for the year of data to process
-#' @param states A vector of the state(s) abbreviations to include in the final data. The
+#' @param date_toget year-month-day character date from `as_of_date` column
+#' outputted from `avail_new_dates()` function.
+#' @param state A vector of the state(s) abbreviations to include in the final data. The
 #' default is NA in order to include all states and territories in the final
 #' data set.
 #' @param geogr Character representation of Census geography to roll up the
@@ -30,7 +29,10 @@
 #' length as `thresh_down` because elements of the vectors will be matched to
 #' count the number of internet providers providing internet at the given
 #' download/upload speed combination within the specified `geogr` region.
-#' @param save_csv Logical for whether or not to save CSV to your working directory.
+#' @param save_csv Logical for whether or not to save the processed data as a CSV
+#' @param wd filepath representing the working directory where the CSV should be
+#' saved. By default, this argument is set to the current working directory which
+#' is the file location in a qmd/rmd document or R project.
 #'
 #' @return tibble of dates available for new FCC data format
 #' @examples
@@ -45,14 +47,13 @@ rollup_new_FCC <- function(
     wd = getwd(),
     fcc_username,
     api_key,
-    get_year,
-    get_month,
+    date_toget,
     states = NULL,
     geogr = "cb",
     tech_exc = c("60", "70"),
     thresh_down = c(25, 25, 50, 100, 100),
     thresh_up = c(3, 5, 10, 10, 100),
-    save_csv = FALSE
+    new_file_name = NULL
 ) {
 
   geo_stp <- if (geogr == "cb") {15
@@ -80,16 +81,10 @@ rollup_new_FCC <- function(
     state_codes <- fips_codes %>%
       pull(state_code)
   } else {
-    state_codes <- fips_codes |>
-      filter(state %in% states) |>
+    state_codes <- fips_codes %>%
+      filter(state %in% states) %>%
       pull(state_code)
   }
-  ## set date
-  available_dates <- avail_new_dates(fcc_username = fcc_username, api_key = api_key)
-  date_toget <- available_dates |>
-    filter(yr == get_year & mnt_lab == get_month) |>
-    pull(as_of_date)
-
   ## get file IDs to download
   api_path = "https://broadbandmap.fcc.gov/api/public/map"
   file_ids =
@@ -188,20 +183,37 @@ rollup_new_FCC <- function(
   ##
   states_to_print <- ifelse(is.null(states), "all", states)
 
-  print(paste0("Your processed FCC dataset from ", str_sub(date_toget, 1, 7),
-               " has states ", str_flatten(states_to_print, collapse = ", ", last = ", and "),
-               ". It is rolled up to the ", geogr, " level, excluding ",
-               str_flatten(tech_exc, collapse = ", ", last = " and "), " technology codes ",
-               "and counts the number of the providers (frn) at the following paired download/upload speeds (Mbps): ",
-               str_flatten(paste0(thresh_down, "/", thresh_up), collapse = ", ", last = " and "), ". "))
+  # if(is.null(new_file_name)){
+  #   new_file_name <- paste0("fcc_fixed_bb_", str_sub(date_toget, 1, 7), ".csv")
+  # }
+  # print(paste0("Your processed FCC dataset from ", str_sub(date_toget, 1, 7),
+  #              " has states ", str_flatten(states_to_print, collapse = ", ", last = ", and "),
+  #              ". It is rolled up to the ", geogr, " level, excluding ",
+  #              str_flatten(tech_exc, collapse = ", ", last = " and "), " technology codes ",
+  #              "and counts the number of the providers (frn) at the following paired download/upload speeds (Mbps): ",
+  #              str_flatten(paste0(thresh_down, "/", thresh_up), collapse = ", ", last = " and "), ". ",
+  #              "This new file is saved at ", wd, "/", new_file_name))
+  # # write processed data to csv
+  # write_csv(output_dat,
+  #           file = paste0(wd, "/", new_file_name))
+
+  message("Your processed FCC dataset from ", month, " ", year,
+          " has states: ", str_flatten(states_to_print, collapse = ", ", last = ", and "),
+          ". It is rolled up to the ", geogr, " level, excluding ",
+          str_flatten(tech_exc, collapse = ", ", last = " and "), " technology codes ",
+          "and counts the number of the providers (frn) at the following paired download/upload speeds (Mbps): ",
+          str_flatten(paste0(thresh_down, "/", thresh_up), collapse = ", ", last = " and "), ". ", "   ")
+
   if(save_csv == TRUE){
-    new_file_name <- paste0("fcc_fixed_bb_", str_sub(date_toget, 1, 7), states_to_print, ".csv")
+    new_file_name <- paste0("fcc_fixed_bb_", month, year, states_to_print, ".csv")
     # write processed data to csv
     write_csv(output_dat,
               file = paste0(wd, "/", new_file_name))
+    message("Your processed data has been saved to the working directory as a CSV.")
   }
 
-
   return(output_dat)
+
+
 
 }

@@ -28,9 +28,12 @@
 #' length as `thresh_down` because elements of the vectors will be matched to
 #' count the number of internet providers providing internet at the given
 #' download/upload speed combination within the specified `geogr` region.
-#' @param save_csv Logical for whether or not to save CSV to your working directory.
+#' @param save_csv Logical for whether or not to save the processed data as a CSV
+#' @param wd filepath representing the working directory where the CSV should be
+#' saved. By default, this argument is set to the current working directory which
+#' is the file location in a qmd/rmd document or R project.
 #'
-#' @return processed csv file to working directory
+#' @return processed dataset
 #' @examples
 #' \dontrun{
 #' }
@@ -38,7 +41,7 @@
 #' @importFrom dplyr mutate %>% select distinct filter group_by summarise left_join rename_at vars
 #' @importFrom tidyr replace_na starts_with
 #' @importFrom data.table as.data.table fwrite
-
+#'
 rollup_old_FCC <- function(
     con,
     table_in_con,
@@ -49,7 +52,8 @@ rollup_old_FCC <- function(
     tech_exc = c("60", "70"),
     thresh_down = c(25, 25, 50, 100, 100),
     thresh_up = c(3, 5, 10, 10, 100),
-    new_file_name = NULL) {
+    save_csv = FALSE,
+    wd = getwd()) {
   if (!is.character(month))
     stop("Month should be a character")
   if (year < 2015 | year > 2020)
@@ -188,6 +192,7 @@ rollup_old_FCC <- function(
     # write processed data to csv
     write_csv(output_dat,
               file = paste0(wd, "/", new_file_name))
+    message("Your processed data has been saved to the working directory as a CSV.")
   }
 
   return(output_dat)
