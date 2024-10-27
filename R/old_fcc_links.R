@@ -25,7 +25,7 @@
 #' @importFrom stringr str_detect str_trim str_sub
 #' @importFrom RSQLite dbWriteTable
 
-old_FCC_links <- function(year = NULL, month = NULL, most_recent = FALSE) {
+old_FCC_links <- function(year = NULL, month = NULL, most_recent = TRUE) {
 
   if(!is.null(month)){
     if(!(month == "Jun" | month == "Dec")){stop("Please use month equal to 'Jun' or 'Dec'")}
