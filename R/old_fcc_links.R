@@ -69,7 +69,7 @@ old_FCC_links <- function(year = NULL, month = NULL, most_recent = TRUE) {
   temp <- old_dat_ver %>%
     group_by(mnt, yr) %>%
     arrange(desc(yr), mnt, desc(version)) %>%
-    mutate(recent = if_else(version == max(version), 1, 0)) %>%
+    mutate(most_rec = if_else(version == max(version), TRUE, FALSE)) %>%
     left_join(links, join_by(rn)) %>%
     ungroup()
 
@@ -81,9 +81,9 @@ old_FCC_links <- function(year = NULL, month = NULL, most_recent = TRUE) {
   most_recent = if(most_recent == FALSE) {0:1} else{1}
 
   dat <- temp %>%
-    filter(recent %in% most_recent) %>%
+    filter(most_rec %in% most_recent) %>%
     filter(yr %in% year, mnt %in% month) %>%
-    select(yr, mnt, version, recent, link)
+    select(yr, mnt, version, most_rec, link)
 
   return(dat)
 }
