@@ -4,11 +4,12 @@
 #' format from the FCC
 #'
 #' @param fcc_username Username for existing FCC account
-#' @param api_key API key for accessing FCC data. Generated within FCC account.
-#' @param date_toget year-month-day character date from `as_of_date` column
-#' outputted from `avail_new_dates()` function.
+#' @param api_key user’s unique API key for accessing FCC data. Generated within
+#' FCC account.
+#' @param get_year The year of the FCC data to process.
+#' @param get_month The month of the FCC data to process: either "Jun" or "Dec".
 #' @param state A vector of the state(s) abbreviations to include in the final data. The
-#' default is NA in order to include all states and territories in the final
+#' default, NULL, includes all states and territories in the final
 #' data set.
 #' @param geogr Character representation of Census geography to roll up the
 #' final data set to
@@ -18,17 +19,17 @@
 #' - cbg = Census Block Group
 #' - ct = Census Tract
 #' - county = County
-#' @param tech_exc Vector of technology codes to exclude from data when rolling up
-#' if you do not wish to exclude any technology codes input NA or c(NA).
-#' @param thresh_down Vector of download speeds thresholds. Should be the same
-#' length as `thresh_up` because elements of the vectors will be matched to
-#' count the number of internet providers providing internet at the given
-#' download/upload speed combination within the specified `geogr` region. See
-#' vingette for further explanation of the parameter.
-#' @param thresh_up Vector of upload speed thresholds. Should be the same
-#' length as `thresh_down` because elements of the vectors will be matched to
-#' count the number of internet providers providing internet at the given
-#' download/upload speed combination within the specified `geogr` region.
+#' @param tech_exc Vector of technology codes to exclude from data when rolling
+#' up. If you do not wish to exclude any technology codes input NA or c(NA).
+#' By default, satellite technologies are excluded.
+#' @param thresh_down Vector of download speeds thresholds with maximum length
+#' of 5. The vector must be the same length as `thresh_up` because elements of the
+#' vectors will be matched to count the number of internet providers at the
+#' given download/upload speed combinations.
+#' @param thresh_up Vector of download speeds thresholds with maximum length
+#' of 5. The vector must be the same length as `thresh_down` because elements of the
+#' vectors will be matched to count the number of internet providers at the
+#' given download/upload speed combinations.
 #' @param save_csv Logical for whether or not to save the processed data as a CSV
 #' @param wd filepath representing the working directory where the CSV should be
 #' saved. By default, this argument is set to the current working directory which
@@ -36,7 +37,7 @@
 #'
 #' @return tibble of dates available for new FCC data format
 #' @examples
-#' \dontrun{ avail_new_dates( user_name = "email@location.com", api_key = "longstringofapicharacters")}
+#' \dontrun{}
 #' @export
 #' @importFrom httr2 request req_headers resp_body_json req_perform
 #' @importFrom plyr ldply
@@ -47,14 +48,36 @@ rollup_new_FCC <- function(
     wd = getwd(),
     fcc_username,
     api_key,
-    date_toget,
+    get_year,
+    get_month,
     states = NULL,
     geogr = "cb",
-    tech_exc = c("60", "70"),
+    tech_exc = c("60"),
     thresh_down = c(25, 25, 50, 100, 100),
     thresh_up = c(3, 5, 10, 10, 100),
-    new_file_name = NULL
-) {
+    save_csv = FALSE,
+    wd = getwd()) {
+
+  if (!is.character(get_month))
+    stop("Month should be a character")
+  if (get_year < 2015 | get_year > 2021)
+    stop("Column names only provided for FCC data years 2015 through 2021")
+  if (!(get_month == "Jun" | get_month == "Dec"))
+    stop("Please set `get_month` equal to 'Jun' or 'Dec'")
+  if (!(length(thresh_down) == length(thresh_up)))
+    stop("Input upload and download speed threshold vectors should be of equal length")
+  if (!(is.numeric(thresh_down) & is.numeric(thresh_up)))
+    stop("Upload and download speed threshold vectors should be of type numeric")
+  if (!(geogr %in% c("cb", "cbg", "ct", "county")) || length(geogr) > 1)
+    stop("Input one of the `geogr` options: cb, cbg, ct, or county")
+  if (!all((tech_exc) %in% c(10, 11, 12, 20, 30, 40, 41, 42, 43, 60, 70, 80, 90, 0)))
+    stop("Input only tech code options to exclude")
+
+  date_toget <- if (get_month == "Jun") {
+    date_toget = paste0(get_year, "-06-30")
+  } else if(get_month == "Dec") {
+    date_toget = paste0(get_year, "-12-31")
+  }
 
   geo_stp <- if (geogr == "cb") {15
   } else if (geogr == "cbg") {12
