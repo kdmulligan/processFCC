@@ -7,7 +7,8 @@
 #' @param csv_file Name of raw FCC csv file to covert to SQL database. This is
 #' relative to the working directory unless an absolute file path is provided.
 #' @param con A DBIConnection object, as returned by \code{dbConnect}.
-#' @param new_tbl_name Name for the new table being created in the SQLite database.
+#' @param new_tbl_name Name for the new table being created in the SQLite
+#' database. Default is based on year and month.
 #' @param year year of data being added to database.
 #' @param month month of data being added to database.
 #' @param pre_process_size Number of rows with which to initialize SQL db.
@@ -52,12 +53,12 @@
 csv_to_sql_db <- function(
     csv_file,
     con,
-    pre_process_size = 1000,
-    chunk_size = 50000,
-    show_progress_bar = TRUE,
+    tbl_name = paste0("fcc_", year, "_", month),
     year,
     month,
-    tbl_name = paste0("fcc_", year, "_", month)
+    pre_process_size = 1000,
+    chunk_size = 50000,
+    show_progress_bar = TRUE
     ){
   yr = year
   mnt = month
