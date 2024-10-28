@@ -4,8 +4,8 @@
 #' rolls up the data based on function inputs.
 #'
 #' @param con A DBIConnection object, as returned by `dbConnect`.
-#' @param year The year of the FCC data to process.
-#' @param month The month of the FCC data to process.
+#' @param get_year The year of the FCC data to process.
+#' @param get_month The month of the FCC data to process.
 #' @param states A vector of the state(s) to include in the final data. The
 #' default is NA in order to include all states and territories in the final
 #' data set.
@@ -17,19 +17,19 @@
 #' - cbg = Census Block Group
 #' - ct = Census Tract
 #' - county = County
-#' @param tech_exc Vector of technology codes to exclude from data when rolling up
-#' if you do not wish to exclude any technology codes input NA or c(NA).
-#' @param thresh_down Vector of download speeds thresholds. Should be the same
-#' length as `thresh_up` because elements of the vectors will be matched to
-#' count the number of internet providers providing internet at the given
-#' download/upload speed combination within the specified `geogr` region. See
-#' vingette for further explanation of the parameter.
-#' @param thresh_up Vector of upload speed thresholds. Should be the same
-#' length as `thresh_down` because elements of the vectors will be matched to
-#' count the number of internet providers providing internet at the given
-#' download/upload speed combination within the specified `geogr` region.
+#' @param tech_exc Vector of technology codes to exclude from data when rolling
+#' up. If you do not wish to exclude any technology codes input NA or c(NA).
+#' By default, satellite technologies are excluded.
+#' @param thresh_down Vector of download speeds thresholds with maximum length
+#' of 5. The vector must be the same length as `thresh_up` because elements of the
+#' vectors will be matched to count the number of internet providers at the
+#' given download/upload speed combinations.
+#' @param thresh_up Vector of download speeds thresholds with maximum length
+#' of 5. The vector must be the same length as `thresh_down` because elements of the
+#' vectors will be matched to count the number of internet providers at the
+#' given download/upload speed combinations.
 #' @param save_csv Logical for whether or not to save the processed data as a CSV
-#' @param wd filepath representing the working directory where the CSV should be
+#' @param wd file path representing the working directory where the CSV should be
 #' saved. By default, this argument is set to the current working directory which
 #' is the file location in a qmd/rmd document or R project.
 #'
@@ -45,21 +45,21 @@
 rollup_old_FCC <- function(
     con,
     table_in_con,
-    year,
-    month,
+    get_year,
+    get_month,
     states = NULL,
     geogr = "cb",
-    tech_exc = c("60", "70"),
+    tech_exc = c("60"),
     thresh_down = c(25, 25, 50, 100, 100),
     thresh_up = c(3, 5, 10, 10, 100),
     save_csv = FALSE,
     wd = getwd()) {
-  if (!is.character(month))
+  if (!is.character(get_month))
     stop("Month should be a character")
-  if (year < 2015 | year > 2020)
-    stop("Column names only provided for FCC data years 2015 through 2020")
-  if (!(month == "Jun" | month == "Dec"))
-    stop("Please use month equal to 'Jun' or 'Dec'")
+  if (get_year < 2015 | get_year > 2021)
+    stop("Column names only provided for FCC data years 2015 through 2021")
+  if (!(get_month == "Jun" | get_month == "Dec"))
+    stop("Please set `get_month` equal to 'Jun' or 'Dec'")
   if (!(length(thresh_down) == length(thresh_up)))
     stop("Input upload and download speed threshold vectors should be of equal length")
   if (!(is.numeric(thresh_down) & is.numeric(thresh_up)))
@@ -175,12 +175,12 @@ rollup_old_FCC <- function(
     rename_at(vars(starts_with("num_prov_")),
               ~ c(paste0("num_prov", thresh_down, "_", thresh_up)))  %>%
     rename_at(vars(starts_with("cen_geo")), ~ c(paste0(geogr, "_fips"))) %>%
-    mutate(date = paste0(year, "_", month)) %>%
+    mutate(date = paste0(get_year, "_", get_month)) %>%
     select(StateAbbr, date, contains("_fips"), everything())
 
   states_to_print <- ifelse(is.null(states), "all", states)
 
-  message("Your processed FCC dataset from ", month, " ", year,
+  message("Your processed FCC dataset from ", get_month, " ", get_year,
           " has states: ", str_flatten(states_to_print, collapse = ", ", last = ", and "),
           ". It is rolled up to the ", geogr, " level, excluding ",
           str_flatten(tech_exc, collapse = ", ", last = " and "), " technology codes ",
