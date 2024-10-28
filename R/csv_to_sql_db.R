@@ -7,10 +7,12 @@
 #' @param csv_file Name of raw FCC csv file to covert to SQL database. This is
 #' relative to the working directory unless an absolute file path is provided.
 #' @param con A DBIConnection object, as returned by \code{dbConnect}.
+#' @param new_tbl_name Name for the new table being created in the SQLite database.
+#' @param year year of data being added to database.
+#' @param month month of data being added to database.
 #' @param pre_process_size Number of rows with which to initialize SQL db.
-#' @param chunk_size Number of rows to include for each chunk
-#' @param show_progress_bar Display progress bar? (default TRUE)
-#' @param db_colname Column names for FCC dataset, as returned by
+#' @param chunk_size Number of rows to include for each chunk.
+#' @param show_progress_bar Display progress bar? (default TRUE).
 #' \code{processFCC::get_colname}
 #'
 #' @return Returns a SQLite database named "table_FCC" inside provided DBI
@@ -47,9 +49,16 @@
 #' @importFrom RSQLite dbWriteTable
 
 
-csv_to_sql_db <- function(csv_file, con, pre_process_size = 1000,
-                          chunk_size = 50000, show_progress_bar = TRUE,
-                          year, month){
+csv_to_sql_db <- function(
+    csv_file,
+    con,
+    pre_process_size = 1000,
+    chunk_size = 50000,
+    show_progress_bar = TRUE,
+    year,
+    month,
+    tbl_name = paste0("fcc_", year, "_", month)
+    ){
   yr = year
   mnt = month
   db_colname <- get_colname(year = yr, month = mnt)
@@ -57,7 +66,7 @@ csv_to_sql_db <- function(csv_file, con, pre_process_size = 1000,
   df <- read_delim(csv_file, delim = ",", n_max = pre_process_size,
                    col_names = db_colname, skip = 1)
   # write first chunk to the SQL table
-  tbl_name = paste0("fcc_", yr, "_", mnt)
+  # tbl_name = paste0("fcc_", yr, "_", mnt)
   dbWriteTable(conn = con, name = tbl_name, value = df, overwrite = TRUE)
 
   # readr chunk functionality to process rest of data
